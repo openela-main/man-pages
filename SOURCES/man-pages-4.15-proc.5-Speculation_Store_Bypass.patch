@@ -1,0 +1,43 @@
+From 2d5049d33ee608c48efd0c02e48d135ddb766fa2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>
+Date: Mon, 23 Jul 2018 14:02:18 +0200
+Subject: [PATCH 2/2] proc.5: Document /proc/[pid]/status
+ Speculation_Store_Bypass field
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Nikola Forró <nforro@redhat.com>
+Signed-off-by: Michael Kerrisk <mtk.manpages@gmail.com>
+---
+ man5/proc.5 | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/man5/proc.5 b/man5/proc.5
+index 9ae9e02..dc83c22 100644
+--- a/man5/proc.5
++++ b/man5/proc.5
+@@ -2262,6 +2262,7 @@ CapBnd: ffffffffffffffff
+ CapAmb:	0000000000000000
+ NoNewPrivs:     0
+ Seccomp:        0
++Speculation_Store_Bypass:       vulnerable
+ Cpus_allowed:   00000001
+ Cpus_allowed_list:      0
+ Mems_allowed:   1
+@@ -2485,6 +2486,12 @@ This field is provided only if the kernel was built with the
+ .BR CONFIG_SECCOMP
+ kernel configuration option enabled.
+ .IP *
++.IR Speculation_Store_Bypass :
++.\" commit fae1fa0fc6cca8beee3ab8ed71d54f9a78fa3f64
++Speculation flaw mitigation state
++(since Linux 4.17, see
++.BR prctl (2)).
++.IP *
+ .IR Cpus_allowed :
+ Mask of CPUs on which this process may run
+ (since Linux 2.6.24, see
+-- 
+2.17.1
+

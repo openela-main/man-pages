@@ -1,0 +1,43 @@
+From ca56d826dbaa05403454d8971b59fabe8b5642d5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>
+Date: Fri, 27 Jul 2018 17:23:26 +0200
+Subject: [PATCH 3/5] nsswitch.conf.5: add information about sss service
+
+---
+ man5/nsswitch.conf.5 | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/man5/nsswitch.conf.5 b/man5/nsswitch.conf.5
+index 38ef64e..dcf09e6 100644
+--- a/man5/nsswitch.conf.5
++++ b/man5/nsswitch.conf.5
+@@ -165,6 +165,16 @@ may be 1 for glibc 2.0, or 2 for glibc 2.1 and later.
+ On systems with additional libraries installed, you may have access to
+ further services such as "hesiod", "ldap", "winbind" and "wins".
+ .PP
++If System Security Services Daemon (SSSD)
++is installed on your system, you can use
++this service with the "sss" keyword.
++SSSD supports the following databases:
++.BR passwd ,
++.BR group ,
++.BR services
++and
++.BR netgroup .
++.PP
+ An action may also be specified following a service specification.
+ The action modifies the behavior following a result obtained
+ from the preceding data source.
+@@ -329,6 +339,9 @@ as the source for the pseudo-databases
+ .BR group_compat ,
+ and
+ .BR shadow_compat .
++.PP
++If SSSD is installed on your system, you can use "sss" as the source
++for these pseudo-databases.
+ .SH FILES
+ A service named
+ .I SERVICE
+-- 
+2.17.1
+

@@ -1,0 +1,2498 @@
+From 1cb64d264cb92d55cfa2b6d3ea5ebc1adca7444f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>
+Date: Fri, 27 Jul 2018 17:27:24 +0200
+Subject: [PATCH 5/5] remove syscalls deprecated on aarch64
+
+---
+ man2/_sysctl.2      |   1 -
+ man2/access.2       |   5 +
+ man2/alarm.2        | 105 --------------
+ man2/bdflush.2      | 133 -----------------
+ man2/chmod.2        |   5 +
+ man2/chown.2        |   7 +
+ man2/clone.2        |  21 +++
+ man2/dup.2          |   7 +
+ man2/epoll_create.2 |   5 +
+ man2/epoll_wait.2   |   5 +
+ man2/eventfd.2      |   5 +
+ man2/fork.2         | 337 ------------------------------------------
+ man2/futimesat.2    | 142 ------------------
+ man2/getdents.2     |   7 +
+ man2/inotify_init.2 |   5 +
+ man2/link.2         |   5 +
+ man2/mkdir.2        |   5 +
+ man2/mknod.2        |   5 +
+ man2/open.2         |   7 +
+ man2/pause.2        |  72 ---------
+ man2/pipe.2         |   5 +
+ man2/poll.2         |   5 +
+ man2/readlink.2     |   5 +
+ man2/recv.2         |   7 +
+ man2/rename.2       |   5 +
+ man2/rmdir.2        | 150 -------------------
+ man2/select.2       |   5 +
+ man2/send.2         |   7 +
+ man2/setpgid.2      |   5 +
+ man2/signalfd.2     |   5 +
+ man2/symlink.2      |   5 +
+ man2/sysctl.2       | 190 ------------------------
+ man2/time.2         | 140 ------------------
+ man2/umount.2       |   5 +
+ man2/unlink.2       |   5 +
+ man2/uselib.2       | 138 ------------------
+ man2/ustat.2        | 127 ----------------
+ man2/utime.2        |   9 +-
+ man2/vfork.2        | 346 --------------------------------------------
+ man2/wait4.2        |   7 +
+ 40 files changed, 171 insertions(+), 1884 deletions(-)
+ delete mode 100644 man2/_sysctl.2
+ delete mode 100644 man2/alarm.2
+ delete mode 100644 man2/bdflush.2
+ delete mode 100644 man2/fork.2
+ delete mode 100644 man2/futimesat.2
+ delete mode 100644 man2/pause.2
+ delete mode 100644 man2/rmdir.2
+ delete mode 100644 man2/sysctl.2
+ delete mode 100644 man2/time.2
+ delete mode 100644 man2/uselib.2
+ delete mode 100644 man2/ustat.2
+ delete mode 100644 man2/vfork.2
+
+diff --git a/man2/_sysctl.2 b/man2/_sysctl.2
+deleted file mode 100644
+index 9e14d4b..0000000
+--- a/man2/_sysctl.2
++++ /dev/null
+@@ -1 +0,0 @@
+-.so man2/sysctl.2
+diff --git a/man2/access.2 b/man2/access.2
+index 2d194b5..9d8f444 100644
+--- a/man2/access.2
++++ b/man2/access.2
+@@ -76,6 +76,11 @@ _ATFILE_SOURCE
+ .PD
+ .SH DESCRIPTION
+ .BR access ()
++system call is DEPRECATED, use
++.BR faccessat ()
++instead!!!
++.PP
++.BR access ()
+ checks whether the calling process can access the file
+ .IR pathname .
+ If
+diff --git a/man2/alarm.2 b/man2/alarm.2
+deleted file mode 100644
+index 43d7664..0000000
+--- a/man2/alarm.2
++++ /dev/null
+@@ -1,105 +0,0 @@
+-.\" This manpage is Copyright (C) 1992 Drew Eckhardt;
+-.\"             and Copyright (C) 1993 Michael Haardt, Ian Jackson.
+-.\"
+-.\" %%%LICENSE_START(VERBATIM)
+-.\" Permission is granted to make and distribute verbatim copies of this
+-.\" manual provided the copyright notice and this permission notice are
+-.\" preserved on all copies.
+-.\"
+-.\" Permission is granted to copy and distribute modified versions of this
+-.\" manual under the conditions for verbatim copying, provided that the
+-.\" entire resulting derived work is distributed under the terms of a
+-.\" permission notice identical to this one.
+-.\"
+-.\" Since the Linux kernel and libraries are constantly changing, this
+-.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+-.\" responsibility for errors or omissions, or for damages resulting from
+-.\" the use of the information contained herein.  The author(s) may not
+-.\" have taken the same level of care in the production of this manual,
+-.\" which is licensed free of charge, as they might when working
+-.\" professionally.
+-.\"
+-.\" Formatted or processed versions of this manual, if unaccompanied by
+-.\" the source, must acknowledge the copyright and authors of this work.
+-.\" %%%LICENSE_END
+-.\"
+-.\" Modified Wed Jul 21 19:42:57 1993 by Rik Faith <faith@cs.unc.edu>
+-.\" Modified Sun Jul 21 21:25:26 1996 by Andries Brouwer <aeb@cwi.nl>
+-.\" Modified Wed Nov  6 03:46:05 1996 by Eric S. Raymond <esr@thyrsus.com>
+-.\"
+-.TH ALARM 2 2017-05-03 "Linux" "Linux Programmer's Manual"
+-.SH NAME
+-alarm \- set an alarm clock for delivery of a signal
+-.SH SYNOPSIS
+-.nf
+-.B #include <unistd.h>
+-.PP
+-.BI "unsigned int alarm(unsigned int " seconds );
+-.fi
+-.SH DESCRIPTION
+-.BR alarm ()
+-arranges for a
+-.B SIGALRM
+-signal to be delivered to the calling process in
+-.I seconds
+-seconds.
+-.PP
+-If
+-.I seconds
+-is zero, any pending alarm is canceled.
+-.PP
+-In any event any previously set
+-.BR alarm ()
+-is canceled.
+-.SH RETURN VALUE
+-.BR alarm ()
+-returns the number of seconds remaining until any previously scheduled
+-alarm was due to be delivered, or zero if there was no previously
+-scheduled alarm.
+-.SH CONFORMING TO
+-POSIX.1-2001, POSIX.1-2008, SVr4, 4.3BSD.
+-.SH NOTES
+-.BR alarm ()
+-and
+-.BR setitimer (2)
+-share the same timer; calls to one will interfere with use of the
+-other.
+-.PP
+-Alarms created by
+-.BR alarm ()
+-are preserved across
+-.BR execve (2)
+-and are not inherited by children created via
+-.BR fork (2).
+-.PP
+-.BR sleep (3)
+-may be implemented using
+-.BR SIGALRM ;
+-mixing calls to
+-.BR alarm ()
+-and
+-.BR sleep (3)
+-is a bad idea.
+-.PP
+-Scheduling delays can, as ever, cause the execution of the process to
+-be delayed by an arbitrary amount of time.
+-.SH SEE ALSO
+-.BR gettimeofday (2),
+-.BR pause (2),
+-.BR select (2),
+-.BR setitimer (2),
+-.BR sigaction (2),
+-.BR signal (2),
+-.BR timer_create (2),
+-.BR timerfd_create (2),
+-.BR sleep (3),
+-.BR time (7)
+-.SH COLOPHON
+-This page is part of release 4.15 of the Linux
+-.I man-pages
+-project.
+-A description of the project,
+-information about reporting bugs,
+-and the latest version of this page,
+-can be found at
+-\%https://www.kernel.org/doc/man\-pages/.
+diff --git a/man2/bdflush.2 b/man2/bdflush.2
+deleted file mode 100644
+index ac0df3e..0000000
+--- a/man2/bdflush.2
++++ /dev/null
+@@ -1,133 +0,0 @@
+-.\" Copyright (c) 1995 Michael Chastain (mec@shell.portal.com), 15 April 1995.
+-.\"
+-.\" %%%LICENSE_START(GPLv2+_DOC_FULL)
+-.\" This is free documentation; you can redistribute it and/or
+-.\" modify it under the terms of the GNU General Public License as
+-.\" published by the Free Software Foundation; either version 2 of
+-.\" the License, or (at your option) any later version.
+-.\"
+-.\" The GNU General Public License's references to "object code"
+-.\" and "executables" are to be interpreted as the output of any
+-.\" document formatting or typesetting system, including
+-.\" intermediate and printed output.
+-.\"
+-.\" This manual is distributed in the hope that it will be useful,
+-.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+-.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-.\" GNU General Public License for more details.
+-.\"
+-.\" You should have received a copy of the GNU General Public
+-.\" License along with this manual; if not, see
+-.\" <http://www.gnu.org/licenses/>.
+-.\" %%%LICENSE_END
+-.\"
+-.\" Modified 1997-01-31 by Eric S. Raymond <esr@thyrsus.com>
+-.\" Modified 2004-06-17 by Michael Kerrisk <mtk.manpages@gmail.com>
+-.\"
+-.TH BDFLUSH 2 2016-10-08 "Linux" "Linux Programmer's Manual"
+-.SH NAME
+-bdflush \- start, flush, or tune buffer-dirty-flush daemon
+-.SH SYNOPSIS
+-.nf
+-.B #include <sys/kdaemon.h>
+-.PP
+-.BI "int bdflush(int "  func ", long *" address );
+-.BI "int bdflush(int "  func ", long " data );
+-.fi
+-.SH DESCRIPTION
+-.IR Note :
+-Since Linux 2.6,
+-.\" As noted in a changes in the 2.5.12 source
+-this system call is deprecated and does nothing.
+-It is likely to disappear altogether in a future kernel release.
+-Nowadays, the task performed by
+-.BR bdflush ()
+-is handled by the kernel
+-.I pdflush
+-thread.
+-.PP
+-.BR bdflush ()
+-starts, flushes, or tunes the buffer-dirty-flush daemon.
+-Only a privileged process (one with the
+-.B CAP_SYS_ADMIN
+-capability) may call
+-.BR bdflush ().
+-.PP
+-If
+-.I func
+-is negative or 0, and no daemon has been started, then
+-.BR bdflush ()
+-enters the daemon code and never returns.
+-.PP
+-If
+-.I func
+-is 1,
+-some dirty buffers are written to disk.
+-.PP
+-If
+-.I func
+-is 2 or more and is even (low bit is 0), then
+-.I address
+-is the address of a long word,
+-and the tuning parameter numbered
+-.RI "(" "func" "\-2)/2"
+-is returned to the caller in that address.
+-.PP
+-If
+-.I func
+-is 3 or more and is odd (low bit is 1), then
+-.I data
+-is a long word,
+-and the kernel sets tuning parameter numbered
+-.RI "(" "func" "\-3)/2"
+-to that value.
+-.PP
+-The set of parameters, their values, and their valid ranges
+-are defined in the Linux kernel source file
+-.IR fs/buffer.c .
+-.SH RETURN VALUE
+-If
+-.I func
+-is negative or 0 and the daemon successfully starts,
+-.BR bdflush ()
+-never returns.
+-Otherwise, the return value is 0 on success and \-1 on failure, with
+-.I errno
+-set to indicate the error.
+-.SH ERRORS
+-.TP
+-.B EBUSY
+-An attempt was made to enter the daemon code after
+-another process has already entered.
+-.TP
+-.B EFAULT
+-.I address
+-points outside your accessible address space.
+-.TP
+-.B EINVAL
+-An attempt was made to read or write an invalid parameter number,
+-or to write an invalid value to a parameter.
+-.TP
+-.B EPERM
+-Caller does not have the
+-.B CAP_SYS_ADMIN
+-capability.
+-.SH VERSIONS
+-Since version 2.23, glibc no longer supports this obsolete system call.
+-.SH CONFORMING TO
+-.BR bdflush ()
+-is Linux-specific and should not be used in programs
+-intended to be portable.
+-.SH SEE ALSO
+-.BR sync (1),
+-.BR fsync (2),
+-.BR sync (2)
+-.SH COLOPHON
+-This page is part of release 4.15 of the Linux
+-.I man-pages
+-project.
+-A description of the project,
+-information about reporting bugs,
+-and the latest version of this page,
+-can be found at
+-\%https://www.kernel.org/doc/man\-pages/.
+diff --git a/man2/chmod.2 b/man2/chmod.2
+index 5c55553..9637954 100644
+--- a/man2/chmod.2
++++ b/man2/chmod.2
+@@ -91,6 +91,11 @@ _ATFILE_SOURCE
+ .PD
+ .ad
+ .SH DESCRIPTION
++.BR chmod ()
++system call is DEPRECATED, use
++.BR fchmodat ()
++instead!!!
++.PP
+ The
+ .BR chmod ()
+ and
+diff --git a/man2/chown.2 b/man2/chown.2
+index ef358e0..b917e5c 100644
+--- a/man2/chown.2
++++ b/man2/chown.2
+@@ -83,6 +83,13 @@ _ATFILE_SOURCE
+ .ad
+ .PD
+ .SH DESCRIPTION
++.BR chown ()
++and
++.BR lchown ()
++system calls are DEPRECATED, use
++.BR fchownat ()
++instead!!!
++.PP
+ These system calls change the owner and group of a file.
+ The
+ .BR chown (),
+diff --git a/man2/clone.2 b/man2/clone.2
+index 20ead6d..62bb4e6 100644
+--- a/man2/clone.2
++++ b/man2/clone.2
+@@ -1206,6 +1206,27 @@ On i386,
+ .BR clone ()
+ should not be called through vsyscall, but directly through
+ .IR "int $0x80" .
++
++.BR clone()
++replaces
++.BR fork (2)
++and
++.BR vfork (2)
++system calls.
++A call to
++.BR fork (2)
++is equivalent to a call to
++.BR clone ()
++specifying
++.I flags
++as just SIGCHLD.
++A call to
++.BR vfork (2)
++is equivalent to calling
++.BR clone ()
++with
++.I flags
++specified as: CLONE_VM | CLONE_VFORK | SIGCHLD.
+ .SH BUGS
+ GNU C library versions 2.3.4 up to and including 2.24
+ contained a wrapper function for
+diff --git a/man2/dup.2 b/man2/dup.2
+index 1829b5e..6782677 100644
+--- a/man2/dup.2
++++ b/man2/dup.2
+@@ -51,6 +51,13 @@ dup, dup2, dup3 \- duplicate a file descriptor
+ .BI "int dup3(int " oldfd ", int " newfd ", int " flags );
+ .fi
+ .SH DESCRIPTION
++.BR dup2 ()
++system call is DEPRECATED, use
++.BR dup3 ()
++with
++.I flags
++set to 0 instead!!!
++.PP
+ The
+ .BR dup ()
+ system call creates a copy of the file descriptor
+diff --git a/man2/epoll_create.2 b/man2/epoll_create.2
+index 2bc253d..64143d6 100644
+--- a/man2/epoll_create.2
++++ b/man2/epoll_create.2
+@@ -33,6 +33,11 @@ epoll_create, epoll_create1 \- open an epoll file descriptor
+ .fi
+ .SH DESCRIPTION
+ .BR epoll_create ()
++system call is DEPRECATED, use
++.BR epoll_create1 ()
++instead!!!
++.PP
++.BR epoll_create ()
+ creates a new
+ .BR epoll (7)
+ instance.
+diff --git a/man2/epoll_wait.2 b/man2/epoll_wait.2
+index 5edf20e..c3793ef 100644
+--- a/man2/epoll_wait.2
++++ b/man2/epoll_wait.2
+@@ -33,6 +33,11 @@ epoll_wait, epoll_pwait \- wait for an I/O event on an epoll file descriptor
+ .BI "               const sigset_t *" sigmask );
+ .fi
+ .SH DESCRIPTION
++.BR epoll_wait ()
++system call is DEPRECATED, use
++.BR epoll_pwait ()
++instead!!!
++.PP
+ The
+ .BR epoll_wait ()
+ system call waits for events on the
+diff --git a/man2/eventfd.2 b/man2/eventfd.2
+index de2461f..0d06430 100644
+--- a/man2/eventfd.2
++++ b/man2/eventfd.2
+@@ -28,6 +28,11 @@ eventfd \- create a file descriptor for event notification
+ .BI "int eventfd(unsigned int " initval ", int " flags );
+ .SH DESCRIPTION
+ .BR eventfd ()
++system call is DEPRECATED, use
++.BR eventfd2 ()
++instead!!!
++.PP
++.BR eventfd ()
+ creates an "eventfd object" that can be used as
+ an event wait/notify mechanism by user-space applications,
+ and by the kernel to notify user-space applications of events.
+diff --git a/man2/fork.2 b/man2/fork.2
+deleted file mode 100644
+index c217a3a..0000000
+--- a/man2/fork.2
++++ /dev/null
+@@ -1,337 +0,0 @@
+-.\" Copyright (C) 2006 Michael Kerrisk <mtk.manpages@gmail.com>
+-.\" A few fragments remain from an earlier (1992) page by
+-.\" Drew Eckhardt (drew@cs.colorado.edu),
+-.\"
+-.\" %%%LICENSE_START(VERBATIM)
+-.\" Permission is granted to make and distribute verbatim copies of this
+-.\" manual provided the copyright notice and this permission notice are
+-.\" preserved on all copies.
+-.\"
+-.\" Permission is granted to copy and distribute modified versions of this
+-.\" manual under the conditions for verbatim copying, provided that the
+-.\" entire resulting derived work is distributed under the terms of a
+-.\" permission notice identical to this one.
+-.\"
+-.\" Since the Linux kernel and libraries are constantly changing, this
+-.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+-.\" responsibility for errors or omissions, or for damages resulting from
+-.\" the use of the information contained herein.  The author(s) may not
+-.\" have taken the same level of care in the production of this manual,
+-.\" which is licensed free of charge, as they might when working
+-.\" professionally.
+-.\"
+-.\" Formatted or processed versions of this manual, if unaccompanied by
+-.\" the source, must acknowledge the copyright and authors of this work.
+-.\" %%%LICENSE_END
+-.\"
+-.\" Modified by Michael Haardt (michael@moria.de)
+-.\" Modified Sat Jul 24 13:22:07 1993 by Rik Faith (faith@cs.unc.edu)
+-.\" Modified 21 Aug 1994 by Michael Chastain (mec@shell.portal.com):
+-.\"   Referenced 'clone(2)'.
+-.\" Modified 1995-06-10, 1996-04-18, 1999-11-01, 2000-12-24
+-.\"   by Andries Brouwer (aeb@cwi.nl)
+-.\" Modified, 27 May 2004, Michael Kerrisk <mtk.manpages@gmail.com>
+-.\"     Added notes on capability requirements
+-.\" 2006-09-04, Michael Kerrisk
+-.\"     Greatly expanded, to describe all attributes that differ
+-.\"	parent and child.
+-.\"
+-.TH FORK 2 2017-09-15 "Linux" "Linux Programmer's Manual"
+-.SH NAME
+-fork \- create a child process
+-.SH SYNOPSIS
+-.B #include <sys/types.h>
+-.br
+-.B #include <unistd.h>
+-.PP
+-.B pid_t fork(void);
+-.SH DESCRIPTION
+-.BR fork ()
+-creates a new process by duplicating the calling process.
+-The new process is referred to as the
+-.I child
+-process.
+-The calling process is referred to as the
+-.I parent
+-process.
+-.PP
+-The child process and the parent process run in separate memory spaces.
+-At the time of
+-.BR fork ()
+-both memory spaces have the same content.
+-Memory writes, file mappings
+-.RB ( mmap (2)),
+-and unmappings
+-.RB ( munmap (2))
+-performed by one of the processes do not affect the other.
+-.PP
+-The child process is an exact duplicate of the parent
+-process except for the following points:
+-.IP * 3
+-The child has its own unique process ID,
+-and this PID does not match the ID of any existing process group
+-.RB ( setpgid (2))
+-or session.
+-.IP *
+-The child's parent process ID is the same as the parent's process ID.
+-.IP *
+-The child does not inherit its parent's memory locks
+-.RB ( mlock (2),
+-.BR mlockall (2)).
+-.IP *
+-Process resource utilizations
+-.RB ( getrusage (2))
+-and CPU time counters
+-.RB ( times (2))
+-are reset to zero in the child.
+-.IP *
+-The child's set of pending signals is initially empty
+-.RB ( sigpending (2)).
+-.IP *
+-The child does not inherit semaphore adjustments from its parent
+-.RB ( semop (2)).
+-.IP *
+-The child does not inherit process-associated record locks from its parent
+-.RB ( fcntl (2)).
+-(On the other hand, it does inherit
+-.BR fcntl (2)
+-open file description locks and
+-.BR flock (2)
+-locks from its parent.)
+-.IP *
+-The child does not inherit timers from its parent
+-.RB ( setitimer (2),
+-.BR alarm (2),
+-.BR timer_create (2)).
+-.IP *
+-The child does not inherit outstanding asynchronous I/O operations
+-from its parent
+-.RB ( aio_read (3),
+-.BR aio_write (3)),
+-nor does it inherit any asynchronous I/O contexts from its parent (see
+-.BR io_setup (2)).
+-.PP
+-The process attributes in the preceding list are all specified
+-in POSIX.1.
+-The parent and child also differ with respect to the following
+-Linux-specific process attributes:
+-.IP * 3
+-The child does not inherit directory change notifications (dnotify)
+-from its parent
+-(see the description of
+-.B F_NOTIFY
+-in
+-.BR fcntl (2)).
+-.IP *
+-The
+-.BR prctl (2)
+-.B PR_SET_PDEATHSIG
+-setting is reset so that the child does not receive a signal
+-when its parent terminates.
+-.IP *
+-The default timer slack value is set to the parent's
+-current timer slack value.
+-See the description of
+-.BR PR_SET_TIMERSLACK
+-in
+-.BR prctl (2).
+-.IP *
+-Memory mappings that have been marked with the
+-.BR madvise (2)
+-.B MADV_DONTFORK
+-flag are not inherited across a
+-.BR fork ().
+-.IP *
+-Memory in address ranges that have been marked with the
+-.BR madvise (2)
+-.B MADV_WIPEONFORK
+-flag is zeroed in the child after a
+-.BR fork ().
+-(The
+-.B MADV_WIPEONFORK
+-setting remains in place for those address ranges in the child.)
+-.IP *
+-The termination signal of the child is always
+-.B SIGCHLD
+-(see
+-.BR clone (2)).
+-.IP *
+-The port access permission bits set by
+-.BR ioperm (2)
+-are not inherited by the child;
+-the child must turn on any bits that it requires using
+-.BR ioperm (2).
+-.PP
+-Note the following further points:
+-.IP * 3
+-The child process is created with a single thread\(emthe
+-one that called
+-.BR fork ().
+-The entire virtual address space of the parent is replicated in the child,
+-including the states of mutexes, condition variables,
+-and other pthreads objects; the use of
+-.BR pthread_atfork (3)
+-may be helpful for dealing with problems that this can cause.
+-.IP *
+-After a
+-.BR fork ()
+-in a multithreaded program,
+-the child can safely call only async-signal-safe functions (see
+-.BR signal-safety (7))
+-until such time as it calls
+-.BR execve (2).
+-.IP *
+-The child inherits copies of the parent's set of open file descriptors.
+-Each file descriptor in the child refers to the same
+-open file description (see
+-.BR open (2))
+-as the corresponding file descriptor in the parent.
+-This means that the two file descriptors share open file status flags,
+-file offset,
+-and signal-driven I/O attributes (see the description of
+-.B F_SETOWN
+-and
+-.B F_SETSIG
+-in
+-.BR fcntl (2)).
+-.IP *
+-The child inherits copies of the parent's set of open message
+-queue descriptors (see
+-.BR mq_overview (7)).
+-Each file descriptor in the child refers to the same
+-open message queue description
+-as the corresponding file descriptor in the parent.
+-This means that the two file descriptors share the same flags
+-.RI ( mq_flags ).
+-.IP *
+-The child inherits copies of the parent's set of open directory streams (see
+-.BR opendir (3)).
+-POSIX.1 says that the corresponding directory streams
+-in the parent and child
+-.I may
+-share the directory stream positioning;
+-on Linux/glibc they do not.
+-.SH RETURN VALUE
+-On success, the PID of the child process is returned in the parent,
+-and 0 is returned in the child.
+-On failure, \-1 is returned in the parent,
+-no child process is created, and
+-.I errno
+-is set appropriately.
+-.SH ERRORS
+-.TP
+-.B EAGAIN
+-.\" NOTE! The following should match the description in pthread_create(3)
+-A system-imposed limit on the number of threads was encountered.
+-There are a number of limits that may trigger this error:
+-.RS
+-.IP * 3
+-the
+-.BR RLIMIT_NPROC
+-soft resource limit (set via
+-.BR setrlimit (2)),
+-which limits the number of processes and threads for a real user ID,
+-was reached;
+-.IP *
+-the kernel's system-wide limit on the number of processes and threads,
+-.IR /proc/sys/kernel/threads-max ,
+-was reached (see
+-.BR proc (5));
+-.IP *
+-the maximum number of PIDs,
+-.IR /proc/sys/kernel/pid_max ,
+-was reached (see
+-.BR proc (5));
+-or
+-.IP *
+-the PID limit
+-.RI ( pids.max )
+-imposed by the cgroup "process number" (PIDs) controller was reached.
+-.RE
+-.TP
+-.B EAGAIN
+-The caller is operating under the
+-.BR SCHED_DEADLINE
+-scheduling policy and does not have the reset-on-fork flag set.
+-See
+-.BR sched (7).
+-.TP
+-.B ENOMEM
+-.BR fork ()
+-failed to allocate the necessary kernel structures because memory is tight.
+-.TP
+-.B ENOMEM
+-An attempt was made to create a child process in a PID namespace
+-whose "init" process has terminated.
+-See
+-.BR pid_namespaces (7).
+-.TP
+-.B ENOSYS
+-.BR fork ()
+-is not supported on this platform (for example,
+-.\" e.g., arm (optionally), blackfin, c6x, frv, h8300, microblaze, xtensa
+-hardware without a Memory-Management Unit).
+-.TP
+-.BR ERESTARTNOINTR " (since Linux 2.6.17)"
+-.\" commit 4a2c7a7837da1b91468e50426066d988050e4d56
+-System call was interrupted by a signal and will be restarted.
+-(This can be seen only during a trace.)
+-.SH CONFORMING TO
+-POSIX.1-2001, POSIX.1-2008, SVr4, 4.3BSD.
+-.SH NOTES
+-.PP
+-Under Linux,
+-.BR fork ()
+-is implemented using copy-on-write pages, so the only penalty that it incurs
+-is the time and memory required to duplicate the parent's page tables,
+-and to create a unique task structure for the child.
+-.SS C library/kernel differences
+-Since version 2.3.3,
+-.\" nptl/sysdeps/unix/sysv/linux/fork.c
+-rather than invoking the kernel's
+-.BR fork ()
+-system call,
+-the glibc
+-.BR fork ()
+-wrapper that is provided as part of the
+-NPTL threading implementation invokes
+-.BR clone (2)
+-with flags that provide the same effect as the traditional system call.
+-(A call to
+-.BR fork ()
+-is equivalent to a call to
+-.BR clone (2)
+-specifying
+-.I flags
+-as just
+-.BR SIGCHLD .)
+-The glibc wrapper invokes any fork handlers that have been
+-established using
+-.BR pthread_atfork (3).
+-.\" and does some magic to ensure that getpid(2) returns the right value.
+-.SH EXAMPLE
+-See
+-.BR pipe (2)
+-and
+-.BR wait (2).
+-.SH SEE ALSO
+-.BR clone (2),
+-.BR execve (2),
+-.BR exit (2),
+-.BR setrlimit (2),
+-.BR unshare (2),
+-.BR vfork (2),
+-.BR wait (2),
+-.BR daemon (3),
+-.BR pthread_atfork (3),
+-.BR capabilities (7),
+-.BR credentials (7)
+-.SH COLOPHON
+-This page is part of release 4.15 of the Linux
+-.I man-pages
+-project.
+-A description of the project,
+-information about reporting bugs,
+-and the latest version of this page,
+-can be found at
+-\%https://www.kernel.org/doc/man\-pages/.
+diff --git a/man2/futimesat.2 b/man2/futimesat.2
+deleted file mode 100644
+index 8991c98..0000000
+--- a/man2/futimesat.2
++++ /dev/null
+@@ -1,142 +0,0 @@
+-.\" This manpage is Copyright (C) 2006, Michael Kerrisk
+-.\"
+-.\" %%%LICENSE_START(VERBATIM)
+-.\" Permission is granted to make and distribute verbatim copies of this
+-.\" manual provided the copyright notice and this permission notice are
+-.\" preserved on all copies.
+-.\"
+-.\" Permission is granted to copy and distribute modified versions of this
+-.\" manual under the conditions for verbatim copying, provided that the
+-.\" entire resulting derived work is distributed under the terms of a
+-.\" permission notice identical to this one.
+-.\"
+-.\" Since the Linux kernel and libraries are constantly changing, this
+-.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+-.\" responsibility for errors or omissions, or for damages resulting from
+-.\" the use of the information contained herein.  The author(s) may not
+-.\" have taken the same level of care in the production of this manual,
+-.\" which is licensed free of charge, as they might when working
+-.\" professionally.
+-.\"
+-.\" Formatted or processed versions of this manual, if unaccompanied by
+-.\" the source, must acknowledge the copyright and authors of this work.
+-.\" %%%LICENSE_END
+-.\"
+-.TH FUTIMESAT 2 2017-09-15 "Linux" "Linux Programmer's Manual"
+-.SH NAME
+-futimesat \- change timestamps of a file relative to a \
+-directory file descriptor
+-.SH SYNOPSIS
+-.nf
+-.B #include <fcntl.h>           /* Definition of AT_* constants */
+-.B #include <sys/time.h>
+-.PP
+-.BI "int futimesat(int " dirfd ", const char *" pathname ,
+-.BI "              const struct timeval " times [2]);
+-.fi
+-.PP
+-.in -4n
+-Feature Test Macro Requirements for glibc (see
+-.BR feature_test_macros (7)):
+-.in
+-.PP
+-.BR futimesat ():
+-_GNU_SOURCE
+-.SH DESCRIPTION
+-This system call is obsolete.
+-Use
+-.BR utimensat (2)
+-instead.
+-.PP
+-The
+-.BR futimesat ()
+-system call operates in exactly the same way as
+-.BR utimes (2),
+-except for the differences described in this manual page.
+-.PP
+-If the pathname given in
+-.I pathname
+-is relative, then it is interpreted relative to the directory
+-referred to by the file descriptor
+-.I dirfd
+-(rather than relative to the current working directory of
+-the calling process, as is done by
+-.BR utimes (2)
+-for a relative pathname).
+-.PP
+-If
+-.I pathname
+-is relative and
+-.I dirfd
+-is the special value
+-.BR AT_FDCWD ,
+-then
+-.I pathname
+-is interpreted relative to the current working
+-directory of the calling process (like
+-.BR utimes (2)).
+-.PP
+-If
+-.I pathname
+-is absolute, then
+-.I dirfd
+-is ignored.
+-.SH RETURN VALUE
+-On success,
+-.BR futimesat ()
+-returns a 0.
+-On error, \-1 is returned and
+-.I errno
+-is set to indicate the error.
+-.SH ERRORS
+-The same errors that occur for
+-.BR utimes (2)
+-can also occur for
+-.BR futimesat ().
+-The following additional errors can occur for
+-.BR futimesat ():
+-.TP
+-.B EBADF
+-.I dirfd
+-is not a valid file descriptor.
+-.TP
+-.B ENOTDIR
+-.I pathname
+-is relative and
+-.I dirfd
+-is a file descriptor referring to a file other than a directory.
+-.SH VERSIONS
+-.BR futimesat ()
+-was added to Linux in kernel 2.6.16;
+-library support was added to glibc in version 2.4.
+-.SH CONFORMING TO
+-This system call is nonstandard.
+-It was implemented from a specification that was proposed for POSIX.1,
+-but that specification was replaced by the one for
+-.BR utimensat (2).
+-.PP
+-A similar system call exists on Solaris.
+-.SH NOTES
+-.SS Glibc notes
+-If
+-.I pathname
+-is NULL, then the glibc
+-.BR futimesat ()
+-wrapper function updates the times for the file referred to by
+-.IR dirfd .
+-.\" The Solaris futimesat() also has this strangeness.
+-.SH SEE ALSO
+-.BR stat (2),
+-.BR utimensat (2),
+-.BR utimes (2),
+-.BR futimes (3),
+-.BR path_resolution (7)
+-.SH COLOPHON
+-This page is part of release 4.15 of the Linux
+-.I man-pages
+-project.
+-A description of the project,
+-information about reporting bugs,
+-and the latest version of this page,
+-can be found at
+-\%https://www.kernel.org/doc/man\-pages/.
+diff --git a/man2/getdents.2 b/man2/getdents.2
+index 73d57cc..0a650fe 100644
+--- a/man2/getdents.2
++++ b/man2/getdents.2
+@@ -42,6 +42,13 @@ getdents, getdents64 \- get directory entries
+ .IR Note :
+ There are no glibc wrappers for these system calls; see NOTES.
+ .SH DESCRIPTION
++.BR getdents ()
++system call is DEPRECATED, use
++.BR getdents64 ()
++or
++.BR readdir (3)
++instead!!!
++.PP
+ These are not the interfaces you are interested in.
+ Look at
+ .BR readdir (3)
+diff --git a/man2/inotify_init.2 b/man2/inotify_init.2
+index cf95d03..b55979e 100644
+--- a/man2/inotify_init.2
++++ b/man2/inotify_init.2
+@@ -41,6 +41,11 @@ For an overview of the inotify API, see
+ .BR inotify (7).
+ .PP
+ .BR inotify_init ()
++system call is DEPRECATED, use
++.BR inotify_init1 ()
++instead!!!
++.PP
++.BR inotify_init ()
+ initializes a new inotify instance and returns a file descriptor associated
+ with a new inotify event queue.
+ .PP
+diff --git a/man2/link.2 b/man2/link.2
+index 0742aed..442115c 100644
+--- a/man2/link.2
++++ b/man2/link.2
+@@ -65,6 +65,11 @@ _ATFILE_SOURCE
+ .PD
+ .SH DESCRIPTION
+ .BR link ()
++system call is DEPRECATED, use
++.BR linkat ()
++instead!!!
++.PP
++.BR link ()
+ creates a new link (also known as a hard link) to an existing file.
+ .PP
+ If
+diff --git a/man2/mkdir.2 b/man2/mkdir.2
+index 28839bd..9a2f151 100644
+--- a/man2/mkdir.2
++++ b/man2/mkdir.2
+@@ -45,6 +45,11 @@ _ATFILE_SOURCE
+ .PD
+ .SH DESCRIPTION
+ .BR mkdir ()
++system call is DEPRECATED, use
++.BR mkdirat ()
++instead!!!
++.PP
++.BR mkdir ()
+ attempts to create a directory named
+ .IR pathname .
+ .PP
+diff --git a/man2/mknod.2 b/man2/mknod.2
+index 82134da..49ef104 100644
+--- a/man2/mknod.2
++++ b/man2/mknod.2
+@@ -46,6 +46,11 @@ _XOPEN_SOURCE\ >=\ 500
+ .RE
+ .ad
+ .SH DESCRIPTION
++.BR mknod ()
++system call is DEPRECATED, use
++.BR mknodat ()
++instead!!!
++.PP
+ The system call
+ .BR mknod ()
+ creates a filesystem node (file, device special file, or
+diff --git a/man2/open.2 b/man2/open.2
+index 0f9a9e7..2eec9c6 100644
+--- a/man2/open.2
++++ b/man2/open.2
+@@ -86,6 +86,13 @@ _ATFILE_SOURCE
+ .ad
+ .PD
+ .SH DESCRIPTION
++.BR open ()
++and
++.BR creat ()
++system calls are DEPRECATED, use
++.BR openat ()
++instead!!!
++.PP
+ The
+ .BR open ()
+ system call opens the file specified by
+diff --git a/man2/pause.2 b/man2/pause.2
+deleted file mode 100644
+index 1a3aa54..0000000
+--- a/man2/pause.2
++++ /dev/null
+@@ -1,72 +0,0 @@
+-.\" Copyright (c) 1992 Drew Eckhardt (drew@cs.colorado.edu), March 28, 1992
+-.\"
+-.\" %%%LICENSE_START(VERBATIM)
+-.\" Permission is granted to make and distribute verbatim copies of this
+-.\" manual provided the copyright notice and this permission notice are
+-.\" preserved on all copies.
+-.\"
+-.\" Permission is granted to copy and distribute modified versions of this
+-.\" manual under the conditions for verbatim copying, provided that the
+-.\" entire resulting derived work is distributed under the terms of a
+-.\" permission notice identical to this one.
+-.\"
+-.\" Since the Linux kernel and libraries are constantly changing, this
+-.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+-.\" responsibility for errors or omissions, or for damages resulting from
+-.\" the use of the information contained herein.  The author(s) may not
+-.\" have taken the same level of care in the production of this manual,
+-.\" which is licensed free of charge, as they might when working
+-.\" professionally.
+-.\"
+-.\" Formatted or processed versions of this manual, if unaccompanied by
+-.\" the source, must acknowledge the copyright and authors of this work.
+-.\" %%%LICENSE_END
+-.\"
+-.\" Modified by Michael Haardt (michael@moria.de)
+-.\" Modified Sat Jul 24 14:48:00 1993 by Rik Faith (faith@cs.unc.edu)
+-.\" Modified 1995 by Mike Battersby (mib@deakin.edu.au)
+-.\" Modified 2000 by aeb, following Michael Kerrisk
+-.\"
+-.TH PAUSE 2 2015-08-08 "Linux" "Linux Programmer's Manual"
+-.SH NAME
+-pause \- wait for signal
+-.SH SYNOPSIS
+-.B #include <unistd.h>
+-.PP
+-.B int pause(void);
+-.SH DESCRIPTION
+-.BR pause ()
+-causes the calling process (or thread) to sleep
+-until a signal is delivered that either terminates the process or causes
+-the invocation of a signal-catching function.
+-.SH RETURN VALUE
+-.BR pause ()
+-returns only when a signal was caught and the
+-signal-catching function returned.
+-In this case,
+-.BR pause ()
+-returns \-1, and
+-.I errno
+-is set to
+-.\" .BR ERESTARTNOHAND .
+-.BR EINTR .
+-.SH ERRORS
+-.TP
+-.B EINTR
+-a signal was caught and the signal-catching function returned.
+-.SH CONFORMING TO
+-POSIX.1-2001, POSIX.1-2008, SVr4, 4.3BSD.
+-.SH SEE ALSO
+-.BR kill (2),
+-.BR select (2),
+-.BR signal (2),
+-.BR sigsuspend (2)
+-.SH COLOPHON
+-This page is part of release 4.15 of the Linux
+-.I man-pages
+-project.
+-A description of the project,
+-information about reporting bugs,
+-and the latest version of this page,
+-can be found at
+-\%https://www.kernel.org/doc/man\-pages/.
+diff --git a/man2/pipe.2 b/man2/pipe.2
+index 1f2e565..baffbee 100644
+--- a/man2/pipe.2
++++ b/man2/pipe.2
+@@ -50,6 +50,11 @@ pipe, pipe2 \- create pipe
+ .fi
+ .SH DESCRIPTION
+ .BR pipe ()
++system call is DEPRECATED, use
++.BR pipe2 ()
++instead!!!
++.PP
++.BR pipe ()
+ creates a pipe, a unidirectional data channel that
+ can be used for interprocess communication.
+ The array
+diff --git a/man2/poll.2 b/man2/poll.2
+index ea4fed9..8c7fb37 100644
+--- a/man2/poll.2
++++ b/man2/poll.2
+@@ -46,6 +46,11 @@ poll, ppoll \- wait for some event on a file descriptor
+ .fi
+ .SH DESCRIPTION
+ .BR poll ()
++system call is DEPRECATED, use
++.BR ppoll ()
++instead!!!
++.PP
++.BR poll ()
+ performs a similar task to
+ .BR select (2):
+ it waits for one of a set of file descriptors to become ready
+diff --git a/man2/readlink.2 b/man2/readlink.2
+index 8a72a37..9b00999 100644
+--- a/man2/readlink.2
++++ b/man2/readlink.2
+@@ -86,6 +86,11 @@ _ATFILE_SOURCE
+ .PD
+ .SH DESCRIPTION
+ .BR readlink ()
++system call is DEPRECATED, use
++.BR readlinkat ()
++instead!!!
++.PP
++.BR readlink ()
+ places the contents of the symbolic link
+ .I pathname
+ in the buffer
+diff --git a/man2/recv.2 b/man2/recv.2
+index c6d4c86..3400ea7 100644
+--- a/man2/recv.2
++++ b/man2/recv.2
+@@ -57,6 +57,13 @@ recv, recvfrom, recvmsg \- receive a message from a socket
+ .BI "ssize_t recvmsg(int " sockfd ", struct msghdr *" msg ", int " flags );
+ .fi
+ .SH DESCRIPTION
++.BR recv ()
++system call is DEPRECATED, use
++.BR recvfrom ()
++with a NULL
++.I src_addr
++argument!
++.PP
+ The
+ .BR recv (),
+ .BR recvfrom (),
+diff --git a/man2/rename.2 b/man2/rename.2
+index f8b4991..457e081 100644
+--- a/man2/rename.2
++++ b/man2/rename.2
+@@ -76,6 +76,11 @@ _ATFILE_SOURCE
+ .PD
+ .SH DESCRIPTION
+ .BR rename ()
++system call is DEPRECATED, use
++.BR renameat ()
++instead!!!
++.PP
++.BR rename ()
+ renames a file, moving it between directories if required.
+ Any other hard links to the file (as created using
+ .BR link (2))
+diff --git a/man2/rmdir.2 b/man2/rmdir.2
+deleted file mode 100644
+index 1eff7cd..0000000
+--- a/man2/rmdir.2
++++ /dev/null
+@@ -1,150 +0,0 @@
+-.\" This manpage is Copyright (C) 1992 Drew Eckhardt;
+-.\"             and Copyright (C) 1993 Michael Haardt, Ian Jackson.
+-.\"
+-.\" %%%LICENSE_START(VERBATIM)
+-.\" Permission is granted to make and distribute verbatim copies of this
+-.\" manual provided the copyright notice and this permission notice are
+-.\" preserved on all copies.
+-.\"
+-.\" Permission is granted to copy and distribute modified versions of this
+-.\" manual under the conditions for verbatim copying, provided that the
+-.\" entire resulting derived work is distributed under the terms of a
+-.\" permission notice identical to this one.
+-.\"
+-.\" Since the Linux kernel and libraries are constantly changing, this
+-.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+-.\" responsibility for errors or omissions, or for damages resulting from
+-.\" the use of the information contained herein.  The author(s) may not
+-.\" have taken the same level of care in the production of this manual,
+-.\" which is licensed free of charge, as they might when working
+-.\" professionally.
+-.\"
+-.\" Formatted or processed versions of this manual, if unaccompanied by
+-.\" the source, must acknowledge the copyright and authors of this work.
+-.\" %%%LICENSE_END
+-.\"
+-.\" Modified 1993-07-24 by Rik Faith <faith@cs.unc.edu>
+-.\" Modified 1997-01-31 by Eric S. Raymond <esr@thyrsus.com>
+-.\" Modified 2004-06-23 by Michael Kerrisk <mtk.manpages@gmail.com>
+-.\"
+-.TH RMDIR 2 2015-08-08 "Linux" "Linux Programmer's Manual"
+-.SH NAME
+-rmdir \- delete a directory
+-.SH SYNOPSIS
+-.B #include <unistd.h>
+-.PP
+-.BI "int rmdir(const char *" pathname );
+-.SH DESCRIPTION
+-.BR rmdir ()
+-deletes a directory, which must be empty.
+-.SH RETURN VALUE
+-On success, zero is returned.
+-On error, \-1 is returned, and
+-.I errno
+-is set appropriately.
+-.SH ERRORS
+-.TP
+-.B EACCES
+-Write access to the directory containing
+-.I pathname
+-was not allowed, or one of the directories in the path prefix of
+-.I pathname
+-did not allow search permission.
+-(See also
+-.BR path_resolution (7).
+-.TP
+-.B EBUSY
+-.I pathname
+-is currently in use by the system or some process that prevents its
+-removal.
+-On Linux, this means
+-.I pathname
+-is currently used as a mount point
+-or is the root directory of the calling process.
+-.TP
+-.B EFAULT
+-.IR pathname " points outside your accessible address space."
+-.TP
+-.B EINVAL
+-.I pathname
+-has
+-.I .
+-as last component.
+-.TP
+-.B ELOOP
+-Too many symbolic links were encountered in resolving
+-.IR pathname .
+-.TP
+-.B ENAMETOOLONG
+-.IR pathname " was too long."
+-.TP
+-.B ENOENT
+-A directory component in
+-.I pathname
+-does not exist or is a dangling symbolic link.
+-.TP
+-.B ENOMEM
+-Insufficient kernel memory was available.
+-.TP
+-.B ENOTDIR
+-.IR pathname ,
+-or a component used as a directory in
+-.IR pathname ,
+-is not, in fact, a directory.
+-.TP
+-.B ENOTEMPTY
+-.I pathname
+-contains entries other than
+-.IR . " and " .. " ;"
+-or,
+-.I pathname
+-has
+-.I ..
+-as its final component.
+-POSIX.1 also allows
+-.\" POSIX.1-2001, POSIX.1-2008
+-.B EEXIST
+-for this condition.
+-.TP
+-.B EPERM
+-The directory containing
+-.I pathname
+-has the sticky bit
+-.RB ( S_ISVTX )
+-set and the process's effective user ID is neither the user ID
+-of the file to be deleted nor that of the directory containing it,
+-and the process is not privileged (Linux: does not have the
+-.B CAP_FOWNER
+-capability).
+-.TP
+-.B EPERM
+-The filesystem containing
+-.I pathname
+-does not support the removal of directories.
+-.TP
+-.B EROFS
+-.I pathname
+-refers to a directory on a read-only filesystem.
+-.SH CONFORMING TO
+-POSIX.1-2001, POSIX.1-2008, SVr4, 4.3BSD.
+-.SH BUGS
+-Infelicities in the protocol underlying NFS can cause the unexpected
+-disappearance of directories which are still being used.
+-.SH SEE ALSO
+-.BR rm (1),
+-.BR rmdir (1),
+-.BR chdir (2),
+-.BR chmod (2),
+-.BR mkdir (2),
+-.BR rename (2),
+-.BR unlink (2),
+-.BR unlinkat (2)
+-.SH COLOPHON
+-This page is part of release 4.15 of the Linux
+-.I man-pages
+-project.
+-A description of the project,
+-information about reporting bugs,
+-and the latest version of this page,
+-can be found at
+-\%https://www.kernel.org/doc/man\-pages/.
+diff --git a/man2/select.2 b/man2/select.2
+index c0a3a47..9fce598 100644
+--- a/man2/select.2
++++ b/man2/select.2
+@@ -73,6 +73,11 @@ Feature Test Macro Requirements for glibc (see
+ _POSIX_C_SOURCE\ >=\ 200112L
+ .SH DESCRIPTION
+ .BR select ()
++system call is DEPRECATED, use
++.BR pselect ()
++instead!!!
++.PP
++.BR select ()
+ and
+ .BR pselect ()
+ allow a program to monitor multiple file descriptors,
+diff --git a/man2/send.2 b/man2/send.2
+index e0bea6d..e5b4082 100644
+--- a/man2/send.2
++++ b/man2/send.2
+@@ -56,6 +56,13 @@ send, sendto, sendmsg \- send a message on a socket
+ ", int " flags );
+ .fi
+ .SH DESCRIPTION
++.BR send ()
++system call is DEPRECATED, use
++.BR sendto ()
++with a NULL
++.I dest_addr
++instead!!!
++.PP
+ The system calls
+ .BR send (),
+ .BR sendto (),
+diff --git a/man2/setpgid.2 b/man2/setpgid.2
+index 6f6b337..3574aed 100644
+--- a/man2/setpgid.2
++++ b/man2/setpgid.2
+@@ -99,6 +99,11 @@ _XOPEN_SOURCE\ >=\ 500
+ .fi
+ .ad
+ .SH DESCRIPTION
++.BR getpgrp ()
++system call is DEPRECATED, use
++.BR getpgid ()
++instead!!!
++.PP
+ All of these interfaces are available on Linux,
+ and are used for getting and setting the
+ process group ID (PGID) of a process.
+diff --git a/man2/signalfd.2 b/man2/signalfd.2
+index 90e81ef..10ac204 100644
+--- a/man2/signalfd.2
++++ b/man2/signalfd.2
+@@ -26,6 +26,11 @@ signalfd \- create a file descriptor for accepting signals
+ .BI "int signalfd(int " fd ", const sigset_t *" mask ", int " flags );
+ .SH DESCRIPTION
+ .BR signalfd ()
++system call is DEPRECATED, use
++.BR signalfd4 ()
++instead!!!
++.PP
++.BR signalfd ()
+ creates a file descriptor that can be used to accept signals
+ targeted at the caller.
+ This provides an alternative to the use of a signal handler or
+diff --git a/man2/symlink.2 b/man2/symlink.2
+index ce0cbe7..78ad595 100644
+--- a/man2/symlink.2
++++ b/man2/symlink.2
+@@ -74,6 +74,11 @@ _ATFILE_SOURCE
+ .PD
+ .SH DESCRIPTION
+ .BR symlink ()
++system call is DEPRECATED, use
++.BR symlinkat ()
++instead!!!
++.PP
++.BR symlink ()
+ creates a symbolic link named
+ .I linkpath
+ which contains the string
+diff --git a/man2/sysctl.2 b/man2/sysctl.2
+deleted file mode 100644
+index 849f1b5..0000000
+--- a/man2/sysctl.2
++++ /dev/null
+@@ -1,190 +0,0 @@
+-.\" Copyright (C) 1996 Andries Brouwer (aeb@cwi.nl)
+-.\"
+-.\" %%%LICENSE_START(VERBATIM)
+-.\" Permission is granted to make and distribute verbatim copies of this
+-.\" manual provided the copyright notice and this permission notice are
+-.\" preserved on all copies.
+-.\"
+-.\" Permission is granted to copy and distribute modified versions of this
+-.\" manual under the conditions for verbatim copying, provided that the
+-.\" entire resulting derived work is distributed under the terms of a
+-.\" permission notice identical to this one.
+-.\"
+-.\" Since the Linux kernel and libraries are constantly changing, this
+-.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+-.\" responsibility for errors or omissions, or for damages resulting from
+-.\" the use of the information contained herein.  The author(s) may not
+-.\" have taken the same level of care in the production of this manual,
+-.\" which is licensed free of charge, as they might when working
+-.\" professionally.
+-.\"
+-.\" Formatted or processed versions of this manual, if unaccompanied by
+-.\" the source, must acknowledge the copyright and authors of this work.
+-.\" %%%LICENSE_END
+-.\"
+-.\" Written 11 April 1996 by Andries Brouwer <aeb@cwi.nl>
+-.\" 960412: Added comments from Stephen Tweedie
+-.\" Modified Tue Oct 22 22:28:41 1996 by Eric S. Raymond <esr@thyrsus.com>
+-.\" Modified Mon Jan  5 20:31:04 1998 by aeb.
+-.\"
+-.TH SYSCTL 2 2017-09-15 "Linux" "Linux Programmer's Manual"
+-.SH NAME
+-sysctl \- read/write system parameters
+-.SH SYNOPSIS
+-.nf
+-.B #include <unistd.h>
+-.B #include <linux/sysctl.h>
+-.PP
+-.BI "int _sysctl(struct __sysctl_args *" args );
+-.fi
+-.PP
+-.IR Note :
+-There is no glibc wrapper for this system call; see NOTES.
+-.SH DESCRIPTION
+-.B Do not use this system call!
+-See NOTES.
+-.PP
+-The
+-.BR _sysctl ()
+-call reads and/or writes kernel parameters.
+-For example, the hostname,
+-or the maximum number of open files.
+-The argument has the form
+-.PP
+-.in +4n
+-.EX
+-struct __sysctl_args {
+-    int    *name;    /* integer vector describing variable */
+-    int     nlen;    /* length of this vector */
+-    void   *oldval;  /* 0 or address where to store old value */
+-    size_t *oldlenp; /* available room for old value,
+-                        overwritten by actual size of old value */
+-    void   *newval;  /* 0 or address of new value */
+-    size_t  newlen;  /* size of new value */
+-};
+-.EE
+-.in
+-.PP
+-This call does a search in a tree structure, possibly resembling
+-a directory tree under
+-.IR /proc/sys ,
+-and if the requested item is found calls some appropriate routine
+-to read or modify the value.
+-.SH RETURN VALUE
+-Upon successful completion,
+-.BR _sysctl ()
+-returns 0.
+-Otherwise, a value of \-1 is returned and
+-.I errno
+-is set to indicate the error.
+-.SH ERRORS
+-.TP
+-.BR EACCES ", " EPERM
+-No search permission for one of the encountered "directories",
+-or no read permission where
+-.I oldval
+-was nonzero, or no write permission where
+-.I newval
+-was nonzero.
+-.TP
+-.B EFAULT
+-The invocation asked for the previous value by setting
+-.I oldval
+-non-NULL, but allowed zero room in
+-.IR oldlenp .
+-.TP
+-.B ENOTDIR
+-.I name
+-was not found.
+-.SH CONFORMING TO
+-This call is Linux-specific, and should not be used in programs
+-intended to be portable.
+-A
+-.BR sysctl ()
+-call has been present in Linux since version 1.3.57.
+-It originated in
+-4.4BSD.
+-Only Linux has the
+-.I /proc/sys
+-mirror, and the object naming schemes differ between Linux and 4.4BSD,
+-but the declaration of the
+-.BR sysctl ()
+-function is the same in both.
+-.SH NOTES
+-Glibc does not provide a wrapper for this system call; call it using
+-.BR syscall (2).
+-Or rather...
+-.I don't
+-call it:
+-use of this system call has long been discouraged,
+-and it is so unloved that
+-\fBit is likely to disappear in a future kernel version\fP.
+-.\" See http://lwn.net/Articles/247243/
+-Since Linux 2.6.24,
+-uses of this system call result in warnings in the kernel log.
+-.\" Though comments in suggest that it is needed by old glibc binaries,
+-.\" so maybe it's not going away.
+-Remove it from your programs now; use the
+-.I /proc/sys
+-interface instead.
+-.PP
+-This system call is available only if the kernel was configured with the
+-.B CONFIG_SYSCTL_SYSCALL
+-option.
+-.SH BUGS
+-The object names vary between kernel versions,
+-making this system call worthless for applications.
+-.PP
+-Not all available objects are properly documented.
+-.PP
+-It is not yet possible to change operating system by writing to
+-.IR /proc/sys/kernel/ostype .
+-.SH EXAMPLE
+-.EX
+-#define _GNU_SOURCE
+-#include <unistd.h>
+-#include <sys/syscall.h>
+-#include <string.h>
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <linux/sysctl.h>
+-
+-int _sysctl(struct __sysctl_args *args );
+-
+-#define OSNAMESZ 100
+-
+-int
+-main(void)
+-{
+-    struct __sysctl_args args;
+-    char osname[OSNAMESZ];
+-    size_t osnamelth;
+-    int name[] = { CTL_KERN, KERN_OSTYPE };
+-
+-    memset(&args, 0, sizeof(struct __sysctl_args));
+-    args.name = name;
+-    args.nlen = sizeof(name)/sizeof(name[0]);
+-    args.oldval = osname;
+-    args.oldlenp = &osnamelth;
+-
+-    osnamelth = sizeof(osname);
+-
+-    if (syscall(SYS__sysctl, &args) == \-1) {
+-        perror("_sysctl");
+-        exit(EXIT_FAILURE);
+-    }
+-    printf("This machine is running %*s\\n", osnamelth, osname);
+-    exit(EXIT_SUCCESS);
+-}
+-.EE
+-.SH SEE ALSO
+-.BR proc (5)
+-.SH COLOPHON
+-This page is part of release 4.15 of the Linux
+-.I man-pages
+-project.
+-A description of the project,
+-information about reporting bugs,
+-and the latest version of this page,
+-can be found at
+-\%https://www.kernel.org/doc/man\-pages/.
+diff --git a/man2/time.2 b/man2/time.2
+deleted file mode 100644
+index 00a9b4d..0000000
+--- a/man2/time.2
++++ /dev/null
+@@ -1,140 +0,0 @@
+-.\" Copyright (c) 1992 Drew Eckhardt (drew@cs.colorado.edu), March 28, 1992
+-.\"
+-.\" %%%LICENSE_START(VERBATIM)
+-.\" Permission is granted to make and distribute verbatim copies of this
+-.\" manual provided the copyright notice and this permission notice are
+-.\" preserved on all copies.
+-.\"
+-.\" Permission is granted to copy and distribute modified versions of this
+-.\" manual under the conditions for verbatim copying, provided that the
+-.\" entire resulting derived work is distributed under the terms of a
+-.\" permission notice identical to this one.
+-.\"
+-.\" Since the Linux kernel and libraries are constantly changing, this
+-.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+-.\" responsibility for errors or omissions, or for damages resulting from
+-.\" the use of the information contained herein.  The author(s) may not
+-.\" have taken the same level of care in the production of this manual,
+-.\" which is licensed free of charge, as they might when working
+-.\" professionally.
+-.\"
+-.\" Formatted or processed versions of this manual, if unaccompanied by
+-.\" the source, must acknowledge the copyright and authors of this work.
+-.\" %%%LICENSE_END
+-.\"
+-.\" Modified by Michael Haardt <michael@moria.de>
+-.\" Modified Sat Jul 24 14:13:40 1993 by Rik Faith <faith@cs.unc.edu>
+-.\" Additions by Joseph S. Myers <jsm28@cam.ac.uk>, 970909
+-.\"
+-.TH TIME 2 2017-09-15 "Linux" "Linux Programmer's Manual"
+-.SH NAME
+-time \- get time in seconds
+-.SH SYNOPSIS
+-.B #include <time.h>
+-.PP
+-.BI "time_t time(time_t *" tloc );
+-.SH DESCRIPTION
+-.BR time ()
+-returns the time as the number of seconds since the
+-Epoch, 1970-01-01 00:00:00 +0000 (UTC).
+-.PP
+-If
+-.I tloc
+-is non-NULL,
+-the return value is also stored in the memory pointed to by
+-.IR tloc .
+-.SH RETURN VALUE
+-On success, the value of time in seconds since the Epoch is returned.
+-On error, \fI((time_t)\ \-1)\fP is returned, and \fIerrno\fP is set
+-appropriately.
+-.SH ERRORS
+-.TP
+-.B EFAULT
+-.I tloc
+-points outside your accessible address space (but see BUGS).
+-.IP
+-On systems where the C library
+-.BR time ()
+-wrapper function invokes an implementation provided by the
+-.BR vdso (7)
+-(so that there is no trap into the kernel),
+-an invalid address may instead trigger a
+-.B SIGSEGV
+-signal.
+-.SH CONFORMING TO
+-SVr4, 4.3BSD, C89, C99, POSIX.1-2001.
+-.\" Under 4.3BSD, this call is obsoleted by
+-.\" .BR gettimeofday (2).
+-POSIX does not specify any error conditions.
+-.SH NOTES
+-POSIX.1 defines
+-.I seconds since the Epoch
+-using a formula that approximates the number of seconds between a
+-specified time and the Epoch.
+-This formula takes account of the facts that
+-all years that are evenly divisible by 4 are leap years,
+-but years that are evenly divisible by 100 are not leap years
+-unless they are also evenly divisible by 400,
+-in which case they are leap years.
+-This value is not the same as the actual number of seconds between the time
+-and the Epoch, because of leap seconds and because system clocks are not
+-required to be synchronized to a standard reference.
+-The intention is that the interpretation of seconds since the Epoch values be
+-consistent; see POSIX.1-2008 Rationale A.4.15 for further rationale.
+-.PP
+-On Linux, a call to
+-.BR time ()
+-with
+-.I tloc
+-specified as NULL cannot fail with the error
+-.BR EOVERFLOW ,
+-even on ABIs where
+-.I time_t
+-is a signed 32-bit integer and the clock ticks past the time 2**31
+-(2038-01-19 03:14:08 UTC, ignoring leap seconds).
+-(POSIX.1 permits, but does not require, the
+-.B EOVERFLOW
+-error in the case where the seconds since the Epoch will not fit in
+-.IR time_t .)
+-Instead, the behavior on Linux is undefined when the system time is out of the
+-.I time_t
+-range.
+-Applications intended to run after 2038 should use ABIs with
+-.I time_t
+-wider than 32 bits.
+-.SH BUGS
+-Error returns from this system call are indistinguishable from
+-successful reports that the time is a few seconds
+-.I before
+-the Epoch, so the C library wrapper function never sets
+-.I errno
+-as a result of this call.
+-.PP
+-The
+-.I tloc
+-argument is obsolescent and should always be NULL in new code.
+-When
+-.I tloc
+-is NULL, the call cannot fail.
+-.\"
+-.SS C library/kernel differences
+-On some architectures, an implementation of
+-.BR time ()
+-is provided in the
+-.BR vdso (7).
+-.SH SEE ALSO
+-.BR date (1),
+-.BR gettimeofday (2),
+-.BR ctime (3),
+-.BR ftime (3),
+-.BR time (7),
+-.BR vdso (7)
+-.SH COLOPHON
+-This page is part of release 4.15 of the Linux
+-.I man-pages
+-project.
+-A description of the project,
+-information about reporting bugs,
+-and the latest version of this page,
+-can be found at
+-\%https://www.kernel.org/doc/man\-pages/.
+diff --git a/man2/umount.2 b/man2/umount.2
+index 292076c..b43443a 100644
+--- a/man2/umount.2
++++ b/man2/umount.2
+@@ -40,6 +40,11 @@ umount, umount2 \- unmount filesystem
+ .fi
+ .SH DESCRIPTION
+ .BR umount ()
++system call is DEPRECATED, use
++.BR umount2 ()
++instead!!!
++.PP
++.BR umount ()
+ and
+ .BR umount2 ()
+ remove the attachment of the (topmost) filesystem mounted on
+diff --git a/man2/unlink.2 b/man2/unlink.2
+index b25b153..93bdb63 100644
+--- a/man2/unlink.2
++++ b/man2/unlink.2
+@@ -65,6 +65,11 @@ _ATFILE_SOURCE
+ .PD
+ .SH DESCRIPTION
+ .BR unlink ()
++system call is DEPRECATED, use
++.BR unlinkat ()
++instead!!!
++.PP
++.BR unlink ()
+ deletes a name from the filesystem.
+ If that name was the
+ last link to a file and no processes have the file open, the file is
+diff --git a/man2/uselib.2 b/man2/uselib.2
+deleted file mode 100644
+index df7bad5..0000000
+--- a/man2/uselib.2
++++ /dev/null
+@@ -1,138 +0,0 @@
+-.\" Copyright (c) 1992 Drew Eckhardt (drew@cs.colorado.edu), March 28, 1992
+-.\"
+-.\" %%%LICENSE_START(VERBATIM)
+-.\" Permission is granted to make and distribute verbatim copies of this
+-.\" manual provided the copyright notice and this permission notice are
+-.\" preserved on all copies.
+-.\"
+-.\" Permission is granted to copy and distribute modified versions of this
+-.\" manual under the conditions for verbatim copying, provided that the
+-.\" entire resulting derived work is distributed under the terms of a
+-.\" permission notice identical to this one.
+-.\"
+-.\" Since the Linux kernel and libraries are constantly changing, this
+-.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+-.\" responsibility for errors or omissions, or for damages resulting from
+-.\" the use of the information contained herein.  The author(s) may not
+-.\" have taken the same level of care in the production of this manual,
+-.\" which is licensed free of charge, as they might when working
+-.\" professionally.
+-.\"
+-.\" Formatted or processed versions of this manual, if unaccompanied by
+-.\" the source, must acknowledge the copyright and authors of this work.
+-.\" %%%LICENSE_END
+-.\"
+-.\" Modified by Michael Haardt <michael@moria.de>
+-.\" Modified 1993-07-24 by Rik Faith <faith@cs.unc.edu>
+-.\" Modified 1996-10-22 by Eric S. Raymond <esr@thyrsus.com>
+-.\" Modified 2004-06-23 by Michael Kerrisk <mtk.manpages@gmail.com>
+-.\" Modified 2005-01-09 by aeb
+-.\"
+-.TH USELIB 2 2017-09-15 "Linux" "Linux Programmer's Manual"
+-.SH NAME
+-uselib \- load shared library
+-.SH SYNOPSIS
+-.B #include <unistd.h>
+-.PP
+-.BI "int uselib(const char *" library );
+-.PP
+-.IR Note :
+-No declaration of this system call is provided in glibc headers; see NOTES.
+-.SH DESCRIPTION
+-The system call
+-.BR uselib ()
+-serves to load
+-a shared library to be used by the calling process.
+-It is given a pathname.
+-The address where to load is found
+-in the library itself.
+-The library can have any recognized
+-binary format.
+-.SH RETURN VALUE
+-On success, zero is returned.
+-On error, \-1 is returned, and
+-.I errno
+-is set appropriately.
+-.SH ERRORS
+-In addition to all of the error codes returned by
+-.BR open (2)
+-and
+-.BR mmap (2),
+-the following may also be returned:
+-.TP
+-.B EACCES
+-The library specified by
+-.I library
+-does not have read or execute permission, or the caller does not have
+-search permission for one of the directories in the path prefix.
+-(See also
+-.BR path_resolution (7).)
+-.TP
+-.B ENFILE
+-The system-wide limit on the total number of open files has been reached.
+-.TP
+-.B ENOEXEC
+-The file specified by
+-.I library
+-is not an executable of a known type;
+-for example, it does not have the correct magic numbers.
+-.SH CONFORMING TO
+-.BR uselib ()
+-is Linux-specific, and should not be used in programs
+-intended to be portable.
+-.SH NOTES
+-This obsolete system call is not supported by glibc.
+-No declaration is provided in glibc headers, but, through a quirk of history,
+-glibc versions before 2.23 did export an ABI for this system call.
+-Therefore, in order to employ this system call,
+-it was sufficient to manually declare the interface in your code;
+-alternatively, you could invoke the system call using
+-.BR syscall (2).
+-.PP
+-In ancient libc versions,
+-.BR uselib ()
+-was used to load
+-the shared libraries with names found in an array of names
+-in the binary.
+-.PP
+-.\" libc 4.3.1f - changelog 1993-03-02
+-Since libc 4.3.2, startup code tries to prefix these names
+-with "/usr/lib", "/lib" and "" before giving up.
+-.\" libc 4.3.4 - changelog 1993-04-21
+-In libc 4.3.4 and later these names are looked for in the directories
+-found in
+-.BR LD_LIBRARY_PATH ,
+-and if not found there,
+-prefixes "/usr/lib", "/lib" and "/" are tried.
+-.PP
+-From libc 4.4.4 on only the library "/lib/ld.so" is loaded,
+-so that this dynamic library can load the remaining libraries needed
+-(again using this call).
+-This is also the state of affairs in libc5.
+-.PP
+-glibc2 does not use this call.
+-.PP
+-Since Linux 3.15,
+-.\" commit 69369a7003735d0d8ef22097e27a55a8bad9557a
+-this system call is available only when the kernel is configured with the
+-.B CONFIG_USELIB
+-option.
+-.SH SEE ALSO
+-.BR ar (1),
+-.BR gcc (1),
+-.BR ld (1),
+-.BR ldd (1),
+-.BR mmap (2),
+-.BR open (2),
+-.BR dlopen (3),
+-.BR capabilities (7),
+-.BR ld.so (8)
+-.SH COLOPHON
+-This page is part of release 4.15 of the Linux
+-.I man-pages
+-project.
+-A description of the project,
+-information about reporting bugs,
+-and the latest version of this page,
+-can be found at
+-\%https://www.kernel.org/doc/man\-pages/.
+diff --git a/man2/ustat.2 b/man2/ustat.2
+deleted file mode 100644
+index 41e9a88..0000000
+--- a/man2/ustat.2
++++ /dev/null
+@@ -1,127 +0,0 @@
+-.\" Copyright (C) 1995, Thomas K. Dyas <tdyas@eden.rutgers.edu>
+-.\"
+-.\" %%%LICENSE_START(VERBATIM)
+-.\" Permission is granted to make and distribute verbatim copies of this
+-.\" manual provided the copyright notice and this permission notice are
+-.\" preserved on all copies.
+-.\"
+-.\" Permission is granted to copy and distribute modified versions of this
+-.\" manual under the conditions for verbatim copying, provided that the
+-.\" entire resulting derived work is distributed under the terms of a
+-.\" permission notice identical to this one.
+-.\"
+-.\" Since the Linux kernel and libraries are constantly changing, this
+-.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+-.\" responsibility for errors or omissions, or for damages resulting from
+-.\" the use of the information contained herein.  The author(s) may not
+-.\" have taken the same level of care in the production of this manual,
+-.\" which is licensed free of charge, as they might when working
+-.\" professionally.
+-.\"
+-.\" Formatted or processed versions of this manual, if unaccompanied by
+-.\" the source, must acknowledge the copyright and authors of this work.
+-.\" %%%LICENSE_END
+-.\"
+-.\" Created  1995-08-09 Thomas K. Dyas <tdyas@eden.rutgers.edu>
+-.\" Modified 1997-01-31 by Eric S. Raymond <esr@thyrsus.com>
+-.\" Modified 2001-03-22 by aeb
+-.\" Modified 2003-08-04 by aeb
+-.\"
+-.TH USTAT 2 2017-09-15 "Linux" "Linux Programmer's Manual"
+-.SH NAME
+-ustat \- get filesystem statistics
+-.SH SYNOPSIS
+-.nf
+-.B #include <sys/types.h>
+-.BR "#include <unistd.h>" "    /* libc[45] */"
+-.BR "#include <ustat.h>" "     /* glibc2 */"
+-.PP
+-.BI "int ustat(dev_t " dev ", struct ustat *" ubuf );
+-.fi
+-.SH DESCRIPTION
+-.BR ustat ()
+-returns information about a mounted filesystem.
+-.I dev
+-is a device number identifying a device containing
+-a mounted filesystem.
+-.I ubuf
+-is a pointer to a
+-.I ustat
+-structure that contains the following
+-members:
+-.PP
+-.in +4n
+-.EX
+-daddr_t f_tfree;      /* Total free blocks */
+-ino_t   f_tinode;     /* Number of free inodes */
+-char    f_fname[6];   /* Filsys name */
+-char    f_fpack[6];   /* Filsys pack name */
+-.EE
+-.in
+-.PP
+-The last two fields,
+-.I f_fname
+-and
+-.IR f_fpack ,
+-are not implemented and will
+-always be filled with null bytes (\(aq\\0\(aq).
+-.SH RETURN VALUE
+-On success, zero is returned and the
+-.I ustat
+-structure pointed to by
+-.I ubuf
+-will be filled in.
+-On error, \-1 is returned, and
+-.I errno
+-is set appropriately.
+-.SH ERRORS
+-.TP
+-.B EFAULT
+-.I ubuf
+-points outside of your accessible address space.
+-.TP
+-.B EINVAL
+-.I dev
+-does not refer to a device containing a mounted filesystem.
+-.TP
+-.B ENOSYS
+-The mounted filesystem referenced by
+-.I dev
+-does not support this operation, or any version of Linux before
+-1.3.16.
+-.SH CONFORMING TO
+-SVr4.
+-.\" SVr4 documents additional error conditions ENOLINK, ECOMM, and EINTR
+-.\" but has no ENOSYS condition.
+-.SH NOTES
+-.BR ustat ()
+-is deprecated and has been provided only for compatibility.
+-All new programs should use
+-.BR statfs (2)
+-instead.
+-.SS HP-UX notes
+-The HP-UX version of the
+-.I ustat
+-structure has an additional field,
+-.IR f_blksize ,
+-that is unknown elsewhere.
+-HP-UX warns:
+-For some filesystems, the number of free inodes does not change.
+-Such filesystems will return \-1 in the field
+-.IR f_tinode .
+-.\" Some software tries to use this in order to test whether the
+-.\" underlying filesystem is NFS.
+-For some filesystems, inodes are dynamically allocated.
+-Such filesystems will return the current number of free inodes.
+-.SH SEE ALSO
+-.BR stat (2),
+-.BR statfs (2)
+-.SH COLOPHON
+-This page is part of release 4.15 of the Linux
+-.I man-pages
+-project.
+-A description of the project,
+-information about reporting bugs,
+-and the latest version of this page,
+-can be found at
+-\%https://www.kernel.org/doc/man\-pages/.
+diff --git a/man2/utime.2 b/man2/utime.2
+index 6c848e8..6393289 100644
+--- a/man2/utime.2
++++ b/man2/utime.2
+@@ -43,9 +43,12 @@ utime, utimes \- change file last access and modification times
+ .BI "int utimes(const char *" filename ", const struct timeval " times [2]);
+ .fi
+ .SH DESCRIPTION
+-.B Note:
+-modern applications may prefer to use the interfaces described in
+-.BR utimensat (2).
++.BR utime ()
++and
++.BR utimes ()
++system calls are DEPRECATED, use
++.BR utimensat (2)
++instead!!!
+ .PP
+ The
+ .BR utime ()
+diff --git a/man2/vfork.2 b/man2/vfork.2
+deleted file mode 100644
+index 32d6042..0000000
+--- a/man2/vfork.2
++++ /dev/null
+@@ -1,346 +0,0 @@
+-.\" Copyright (c) 1999 Andries Brouwer (aeb@cwi.nl), 1 Nov 1999
+-.\" and Copyright 2006, 2012, 2017 Michael Kerrisk <mtk.manpages@gmail.com>
+-.\"
+-.\" %%%LICENSE_START(VERBATIM)
+-.\" Permission is granted to make and distribute verbatim copies of this
+-.\" manual provided the copyright notice and this permission notice are
+-.\" preserved on all copies.
+-.\"
+-.\" Permission is granted to copy and distribute modified versions of this
+-.\" manual under the conditions for verbatim copying, provided that the
+-.\" entire resulting derived work is distributed under the terms of a
+-.\" permission notice identical to this one.
+-.\"
+-.\" Since the Linux kernel and libraries are constantly changing, this
+-.\" manual page may be incorrect or out-of-date.  The author(s) assume no
+-.\" responsibility for errors or omissions, or for damages resulting from
+-.\" the use of the information contained herein.  The author(s) may not
+-.\" have taken the same level of care in the production of this manual,
+-.\" which is licensed free of charge, as they might when working
+-.\" professionally.
+-.\"
+-.\" Formatted or processed versions of this manual, if unaccompanied by
+-.\" the source, must acknowledge the copyright and authors of this work.
+-.\" %%%LICENSE_END
+-.\"
+-.\" 1999-11-10: Merged text taken from the page contributed by
+-.\" Reed H. Petty (rhp@draper.net)
+-.\"
+-.TH VFORK 2 2017-09-15 "Linux" "Linux Programmer's Manual"
+-.SH NAME
+-vfork \- create a child process and block parent
+-.SH SYNOPSIS
+-.B #include <sys/types.h>
+-.br
+-.B #include <unistd.h>
+-.PP
+-.B pid_t vfork(void);
+-.PP
+-.in -4n
+-Feature Test Macro Requirements for glibc (see
+-.BR feature_test_macros (7)):
+-.in
+-.PP
+-.BR vfork ():
+-.ad l
+-.RS 4
+-.PD 0
+-.TP 4
+-Since glibc 2.12:
+-.nf
+-(_XOPEN_SOURCE\ >=\ 500) && ! (_POSIX_C_SOURCE\ >=\ 200809L)
+-    || /* Since glibc 2.19: */ _DEFAULT_SOURCE
+-    || /* Glibc versions <= 2.19: */ _BSD_SOURCE
+-.TP 4
+-.fi
+-Before glibc 2.12:
+-_BSD_SOURCE || _XOPEN_SOURCE\ >=\ 500
+-.\"     || _XOPEN_SOURCE\ &&\ _XOPEN_SOURCE_EXTENDED
+-.PD
+-.RE
+-.ad b
+-.SH DESCRIPTION
+-.SS Standard description
+-(From POSIX.1)
+-The
+-.BR vfork ()
+-function has the same effect as
+-.BR fork (2),
+-except that the behavior is undefined if the process created by
+-.BR vfork ()
+-either modifies any data other than a variable of type
+-.I pid_t
+-used to store the return value from
+-.BR vfork (),
+-or returns from the function in which
+-.BR vfork ()
+-was called, or calls any other function before successfully calling
+-.BR _exit (2)
+-or one of the
+-.BR exec (3)
+-family of functions.
+-.SS Linux description
+-.BR vfork (),
+-just like
+-.BR fork (2),
+-creates a child process of the calling process.
+-For details and return value and errors, see
+-.BR fork (2).
+-.PP
+-.BR vfork ()
+-is a special case of
+-.BR clone (2).
+-It is used to create new processes without copying the page tables of
+-the parent process.
+-It may be useful in performance-sensitive applications
+-where a child is created which then immediately issues an
+-.BR execve (2).
+-.PP
+-.BR vfork ()
+-differs from
+-.BR fork (2)
+-in that the calling thread is suspended until the child terminates
+-(either normally,
+-by calling
+-.BR _exit (2),
+-or abnormally, after delivery of a fatal signal),
+-or it makes a call to
+-.BR execve (2).
+-Until that point, the child shares all memory with its parent,
+-including the stack.
+-The child must not return from the current function or call
+-.BR exit (3)
+-(which would have the effect of calling exit handlers
+-established by the parent process and flushing the parent's
+-.BR stdio (3)
+-buffers), but may call
+-.BR _exit (2).
+-.PP
+-As with
+-.BR fork (2),
+-the child process created by
+-.BR vfork ()
+-inherits copies of various of the caller's process attributes
+-(e.g., file descriptors, signal dispositions, and current working directory);
+-the
+-.BR vfork ()
+-call differs only in the treatment of the virtual address space,
+-as described above.
+-.PP
+-Signals sent to the parent
+-arrive after the child releases the parent's memory
+-(i.e., after the child terminates
+-or calls
+-.BR execve (2)).
+-.SS Historic description
+-Under Linux,
+-.BR fork (2)
+-is implemented using copy-on-write pages, so the only penalty incurred by
+-.BR fork (2)
+-is the time and memory required to duplicate the parent's page tables,
+-and to create a unique task structure for the child.
+-However, in the bad old days a
+-.BR fork (2)
+-would require making a complete copy of the caller's data space,
+-often needlessly, since usually immediately afterward an
+-.BR exec (3)
+-is done.
+-Thus, for greater efficiency, BSD introduced the
+-.BR vfork ()
+-system call, which did not fully copy the address space of
+-the parent process, but borrowed the parent's memory and thread
+-of control until a call to
+-.BR execve (2)
+-or an exit occurred.
+-The parent process was suspended while the
+-child was using its resources.
+-The use of
+-.BR vfork ()
+-was tricky: for example, not modifying data
+-in the parent process depended on knowing which variables were
+-held in a register.
+-.SH CONFORMING TO
+-4.3BSD; POSIX.1-2001 (but marked OBSOLETE).
+-POSIX.1-2008 removes the specification of
+-.BR vfork ().
+-.PP
+-The requirements put on
+-.BR vfork ()
+-by the standards are weaker than those put on
+-.BR fork (2),
+-so an implementation where the two are synonymous is compliant.
+-In particular, the programmer cannot rely on the parent
+-remaining blocked until the child either terminates or calls
+-.BR execve (2),
+-and cannot rely on any specific behavior with respect to shared memory.
+-.\" In AIXv3.1 vfork is equivalent to fork.
+-.SH NOTES
+-.PP
+-Some consider the semantics of
+-.BR vfork ()
+-to be an architectural blemish, and the 4.2BSD man page stated:
+-"This system call will be eliminated when proper system sharing mechanisms
+-are implemented.
+-Users should not depend on the memory sharing semantics of
+-.BR vfork ()
+-as it will, in that case, be made synonymous to
+-.BR fork (2).\c
+-"
+-However, even though modern memory management hardware
+-has decreased the performance difference between
+-.BR fork (2)
+-and
+-.BR vfork (),
+-there are various reasons why Linux and other systems have retained
+-.BR vfork ():
+-.IP * 3
+-Some performance-critical applications require the small performance
+-advantage conferred by
+-.BR vfork ().
+-.IP *
+-.BR vfork ()
+-can be implemented on systems that lack a memory-management unit (MMU), but
+-.BR fork (2)
+-can't be implemented on such systems.
+-(POSIX.1-2008 removed
+-.BR vfork ()
+-from the standard; the POSIX rationale for the
+-.BR posix_spawn (3)
+-function notes that that function,
+-which provides functionality equivalent to
+-.BR fork (2)+ exec (3),
+-is designed to be implementable on systems that lack an MMU.)
+-.\" http://stackoverflow.com/questions/4259629/what-is-the-difference-between-fork-and-vfork
+-.\" http://developers.sun.com/solaris/articles/subprocess/subprocess.html
+-.\" http://mailman.uclinux.org/pipermail/uclinux-dev/2009-April/000684.html
+-.\"
+-.IP *
+-On systems where memory is constrained,
+-.BR vfork ()
+-avoids the need to temporarily commit memory (see the description of
+-.IR /proc/sys/vm/overcommit_memory
+-in
+-.BR proc (5))
+-in order to execute a new program.
+-(This can be especially beneficial where a large parent process wishes
+-to execute a small helper program in a child process.)
+-By contrast, using
+-.BR fork (2)
+-in this scenario requires either committing an amount of memory equal
+-to the size of the parent process (if strict overcommitting is in force)
+-or overcommitting memory with the risk that a process is terminated
+-by the out-of-memory (OOM) killer.
+-.\"
+-.SS Caveats
+-The child process should take care not to modify the memory in unintended ways,
+-since such changes will be seen by the parent process once
+-the child terminates or executes another program.
+-In this regard, signal handlers can be especially problematic:
+-if a signal handler that is invoked in the child of
+-.BR vfork ()
+-changes memory, those changes may result in an inconsistent process state
+-from the perspective of the parent process
+-(e.g., memory changes would be visible in the parent,
+-but changes to the state of open file descriptors would not be visible).
+-.PP
+-When
+-.BR vfork ()
+-is called in a multithreaded process,
+-only the calling thread is suspended until the child terminates
+-or executes a new program.
+-This means that the child is sharing an address space with other running code.
+-This can be dangerous if another thread in the parent process
+-changes credentials (using
+-.BR setuid (2)
+-or similar),
+-since there are now two processes with different privilege levels
+-running in the same address space.
+-As an example of the dangers,
+-suppose that a multithreaded program running as root creates a child using
+-.BR vfork ().
+-After the
+-.BR vfork (),
+-a thread in the parent process drops the process to an unprivileged user
+-in order to run some untrusted code
+-(e.g., perhaps via plug-in opened with
+-.BR dlopen (3)).
+-In this case, attacks are possible where the parent process uses
+-.BR mmap (2)
+-to map in code that will be executed by the privileged child process.
+-.\"
+-.SS Linux notes
+-Fork handlers established using
+-.BR pthread_atfork (3)
+-are not called when a multithreaded program employing
+-the NPTL threading library calls
+-.BR vfork ().
+-Fork handlers are called in this case in a program using the
+-LinuxThreads threading library.
+-(See
+-.BR pthreads (7)
+-for a description of Linux threading libraries.)
+-.PP
+-A call to
+-.BR vfork ()
+-is equivalent to calling
+-.BR clone (2)
+-with
+-.I flags
+-specified as:
+-.PP
+-     CLONE_VM | CLONE_VFORK | SIGCHLD
+-.SS History
+-The
+-.BR vfork ()
+-system call appeared in 3.0BSD.
+-.\" In the release notes for 4.2BSD Sam Leffler wrote: `vfork: Is still
+-.\" present, but definitely on its way out'.
+-In 4.4BSD it was made synonymous to
+-.BR fork (2)
+-but NetBSD introduced it again;
+-see
+-.UR http://www.netbsd.org\:/Documentation\:/kernel\:/vfork.html
+-.UE .
+-In Linux, it has been equivalent to
+-.BR fork (2)
+-until 2.2.0-pre6 or so.
+-Since 2.2.0-pre9 (on i386, somewhat later on
+-other architectures) it is an independent system call.
+-Support was added in glibc 2.0.112.
+-.SH BUGS
+-.PP
+-Details of the signal handling are obscure and differ between systems.
+-The BSD man page states:
+-"To avoid a possible deadlock situation, processes that are children
+-in the middle of a
+-.BR vfork ()
+-are never sent
+-.B SIGTTOU
+-or
+-.B SIGTTIN
+-signals; rather, output or
+-.IR ioctl s
+-are allowed and input attempts result in an end-of-file indication."
+-.\"
+-.\" As far as I can tell, the following is not true in 2.6.19:
+-.\" Currently (Linux 2.3.25),
+-.\" .BR strace (1)
+-.\" cannot follow
+-.\" .BR vfork ()
+-.\" and requires a kernel patch.
+-.SH SEE ALSO
+-.BR clone (2),
+-.BR execve (2),
+-.BR _exit (2),
+-.BR fork (2),
+-.BR unshare (2),
+-.BR wait (2)
+-.SH COLOPHON
+-This page is part of release 4.15 of the Linux
+-.I man-pages
+-project.
+-A description of the project,
+-information about reporting bugs,
+-and the latest version of this page,
+-can be found at
+-\%https://www.kernel.org/doc/man\-pages/.
+diff --git a/man2/wait4.2 b/man2/wait4.2
+index be31213..4fe7214 100644
+--- a/man2/wait4.2
++++ b/man2/wait4.2
+@@ -67,6 +67,13 @@ Feature Test Macro Requirements for glibc (see
+         _BSD_SOURCE
+ .ad
+ .SH DESCRIPTION
++.BR wait4 ()
++system call is DEPRECATED, use
++.BR waitpid (2)
++or
++.BR waitid (2)
++instead!!!
++.PP
+ These functions are obsolete; use
+ .BR waitpid (2)
+ or
+-- 
+2.17.1
+
