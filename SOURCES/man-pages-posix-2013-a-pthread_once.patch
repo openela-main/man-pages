@@ -1,0 +1,35 @@
+From 0409c3370ddd08cec10586f6f52fe1fbe3c717ef Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>
+Date: Tue, 24 Jan 2017 16:35:02 +0100
+Subject: [PATCH] pthread_once.3p: fix return type of initialize_random()
+ function
+
+---
+ man-pages-posix-2013-a/man3p/pthread_once.3p | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/man-pages-posix-2013-a/man3p/pthread_once.3p b/man-pages-posix-2013-a/man3p/pthread_once.3p
+index 316b1e9..db83d63 100644
+--- a/man-pages-posix-2013-a/man3p/pthread_once.3p
++++ b/man-pages-posix-2013-a/man3p/pthread_once.3p
+@@ -86,7 +86,7 @@ on entry to a routine, as follows:
+ .nf
+ \fB
+ static int random_is_initialized = 0;
+-extern int initialize_random();
++extern void initialize_random();
+ .P
+ int random_function()
+ {
+@@ -125,7 +125,7 @@ becomes:
+ \fB
+ #include <pthread.h>
+ static pthread_once_t random_is_initialized = PTHREAD_ONCE_INIT;
+-extern int initialize_random();
++extern void initialize_random();
+ .P
+ int random_function()
+ {
+-- 
+2.7.4
+
