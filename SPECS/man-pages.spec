@@ -7,8 +7,8 @@
 
 Summary: Linux kernel and C library user-space interface documentation
 Name: man-pages
-Version: 5.10
-Release: 6%{?dist}
+Version: 6.04
+Release: 1%{?dist}
 License: GPL+ and GPLv2+ and BSD and MIT and Copyright only and IEEE
 URL: http://www.kernel.org/doc/man-pages/
 Source: http://www.kernel.org/pub/linux/docs/man-pages/man-pages-%{version}.tar.xz
@@ -42,14 +42,6 @@ BuildArch: noarch
 # https://bugzilla.kernel.org/show_bug.cgi?id=53781
 Patch21: man-pages-3.42-close.patch
 
-# resolves: #2059981
-# https://lore.kernel.org/linux-man/920642e4bc7b60c19962187b266dfc0ee4ac7f27.camel@redhat.com/
-Patch22: man-pages-5.10-subid.patch
-
-# resolv.conf man pages typo fix
-# Source: Upstream-commit 076fbe061333bdfecbd5765c782c477233e38e2f
-Patch23: man-pages-5.10-resolv-conf-typo-fix.patch
-
 %description
 A large collection of manual pages from the Linux Documentation Project (LDP).
 
@@ -57,8 +49,6 @@ A large collection of manual pages from the Linux Documentation Project (LDP).
 %setup -q -a 1 -a 2
 
 %patch21 -p1
-%patch22 -p1
-%patch23 -p1
 
 # rename posix README so we don't have conflict
 mv %{posix_name}/README %{posix_name}/%{posix_name_rel}.README
@@ -84,12 +74,12 @@ rm man3/crypt{,_r}.3
 # nothing to build
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT
+make install prefix=/usr DESTDIR=$RPM_BUILD_ROOT
 pushd %{posix_name}
-make install DESTDIR=$RPM_BUILD_ROOT
+make install prefix=/usr DESTDIR=$RPM_BUILD_ROOT
 popd
 pushd %{additional_name}
-make install DESTDIR=$RPM_BUILD_ROOT
+make install prefix=/usr DESTDIR=$RPM_BUILD_ROOT
 popd
 
 # rename files for alternative usage
@@ -118,12 +108,20 @@ if [ $1 -ge 1 ]; then
 fi
 
 %files
-%doc README man-pages-%{version}.Announce Changes
+%doc README Changes
 %doc %{posix_name}/POSIX-COPYRIGHT %{posix_name}/%{posix_name_rel}.{README,Announce}
 %ghost %{_mandir}/man7/man.7*
 %{_mandir}/man*/*
 
 %changelog
+* Thu Jul 13 2023 Lukas Javorsky <ljavorsk@redhat.com> - 6.04-1
+- Rebase to 6.04 version per request from RHIVOS team
+- Resolves: RHEL-683
+
+* Wed May 03 2023 Lukas Javorsky <ljavorsk@redhat.com> - 5.10-7
+- resolv.conf.5 no-aaaa option
+  resolves: RHEL-454
+
 * Fri Nov 04 2022 Lukas Javorsky <ljavorsk@redhat.com> - 5.10-6
 - Fix the resolv.conf typo
 - Source from upstream commit 076fbe061333bdfecbd5765c782c477233e38e2f
