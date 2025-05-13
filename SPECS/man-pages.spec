@@ -8,8 +8,24 @@
 Summary: Linux kernel and C library user-space interface documentation
 Name: man-pages
 Version: 6.04
-Release: 1%{?dist}
-License: GPL+ and GPLv2+ and BSD and MIT and Copyright only and IEEE
+Release: 2%{?dist}
+# List of licenses with examples of man-pages using them
+# BSD-2-Clause: man-pages/man5/elf.5
+# BSD-3-Clause: man-pages/man3/list.3
+# BSD-4.3TAHOE: man-pages/man5/resolv.conf.5
+# BSD-4-Clause-UC: man-pages/man2/accept.2
+# GPL-1.0-or-later: man-pages/man1/ldd.1
+# GPL-2.0-only: man-pages/man2/fallocate.2
+# GPL-2.0-or-later: man-pages/man1/getent.1
+# LicenseRef-Fedora-Public-Domain: man-pages/man2/nfsservctl.2
+# LicenseRef-Fedora-UltraPermissive: man-pages/man2/futex.2
+# Linux-man-pages-1-para: man-pages/man2/getcpu.2
+# Linux-man-pages-copyleft: man-pages/man2/chdir.2
+# Linux-man-pages-copyleft-2-para: man-pages/man2/move_pages.2
+# Linux-man-pages-copyleft-var: man-pages/man2/get_mempolicy.2
+# MIT: man-pages/man3/program_invocation_name.3
+# Spencer-94: man-pages/man7/regex.7
+License: BSD-2-Clause AND BSD-3-Clause AND BSD-4.3TAHOE AND BSD-4-Clause-UC AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-Fedora-Public-Domain AND LicenseRef-Fedora-UltraPermissive AND Linux-man-pages-1-para AND Linux-man-pages-copyleft AND Linux-man-pages-copyleft-2-para AND Linux-man-pages-copyleft-var AND MIT AND Spencer-94
 URL: http://www.kernel.org/doc/man-pages/
 Source: http://www.kernel.org/pub/linux/docs/man-pages/man-pages-%{version}.tar.xz
 # POSIX man pages
@@ -42,6 +58,10 @@ BuildArch: noarch
 # https://bugzilla.kernel.org/show_bug.cgi?id=53781
 Patch21: man-pages-3.42-close.patch
 
+# Upstream commit: https://git.kernel.org/pub/scm/docs/man-pages/man-pages.git/commit/?id=f1016b60769174da8e396e30fd25f58bb58d4232
+# Resolves: RHEL-53953
+Patch22: 0001-dlinfo.3-Document-the-RTLD_DI_PHDR-request.patch
+
 %description
 A large collection of manual pages from the Linux Documentation Project (LDP).
 
@@ -49,6 +69,7 @@ A large collection of manual pages from the Linux Documentation Project (LDP).
 %setup -q -a 1 -a 2
 
 %patch21 -p1
+%patch22 -p1
 
 # rename posix README so we don't have conflict
 mv %{posix_name}/README %{posix_name}/%{posix_name_rel}.README
@@ -114,6 +135,10 @@ fi
 %{_mandir}/man*/*
 
 %changelog
+* Fri Sep 13 2024 Lukas Javorsky <ljavorsk@redhat.com> - 6.04-2
+- Add RTLD_DI_PHDR to dlinfo(3)
+- Resolves: RHEL-53953
+
 * Thu Jul 13 2023 Lukas Javorsky <ljavorsk@redhat.com> - 6.04-1
 - Rebase to 6.04 version per request from RHIVOS team
 - Resolves: RHEL-683
