@@ -1,0 +1,74 @@
+commit ca69daf45f94fda061f796efcc4f24ca76d8e380
+Author: Phil Auld <pauld@redhat.com>
+Date:   Thu Jan 16 14:37:47 2025 +0000
+
+    man/man7/sched.7: Mention autogroup disabled behavior
+    
+    The autogroup feature can be contolled at runtime when built into the
+    kernel.  Disabling it in this case still creates autogroups and still
+    shows the autogroup membership for the task in /proc.  The scheduler
+    code will just not use the the autogroup task group.  This can be
+    confusing to users.  Add a sentence to this effect to sched.7 to point
+    this out.
+    
+    The kernel code shows how this is used.  The sched_autogroup_enabled
+    toggle is only used in one place.
+    
+    kernel/sched/autogroup.h:
+    
+            static inline struct task_group *
+            autogroup_task_group(struct task_struct *p, struct task_group *tg)
+            {
+                    extern unsigned int sysctl_sched_autogroup_enabled;
+                    int enabled = READ_ONCE(sysctl_sched_autogroup_enabled);
+    
+                    if (enabled && task_wants_autogroup(p, tg))
+                            return p->signal->autogroup->tg;
+    
+                    return tg;
+            }
+    
+            task_wants_autogroup() is in kernel/sched/autogroup.c:
+    
+            bool task_wants_autogroup(struct task_struct *p, struct task_group *tg)
+            {
+                    if (tg != &root_task_group)
+                            return false;
+                    ...
+    
+                    return true;
+            }
+    
+    One can see that any group set other than root also bypasses the use of
+    the autogroup.  All of the machinery around the creation of the
+    autogroup is not effected by the toggle.
+    
+    From userspace:
+    0
+    /autogroup-112 nice 0
+    
+    Note, systemd based system these days is not really using autogroups at
+    all anyway because any task in a non-root cgroup bypasses the autogroup
+    as well.
+    
+    Cc: Carlos O'Donell <codonell@redhat.com>
+    Signed-off-by: Phil Auld <pauld@redhat.com>
+    Message-ID: <20250116143747.2366152-1-pauld@redhat.com>
+    Signed-off-by: Alejandro Colomar <alx@kernel.org>
+
+diff --git a/man7/sched.7 b/man/man7/sched.7
+index 71f098e48..fb8a69918 100644
+--- a/man7/sched.7
++++ b/man7/sched.7
+@@ -724,6 +724,11 @@ in the group terminates.
+ .P
+ When autogrouping is enabled, all of the members of an autogroup
+ are placed in the same kernel scheduler "task group".
++When disabled,
++the group creation happens as above,
++and autogroup membership is still visible in
++.IR /proc ,
++but the autogroups are not used.
+ The CFS scheduler employs an algorithm that equalizes the
+ distribution of CPU cycles across task groups.
+ The benefits of this for interactive desktop performance
