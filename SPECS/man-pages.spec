@@ -1,14 +1,7 @@
-%global posix_version 2017
-%global posix_release a
-%global posix_name man-pages-posix-%{posix_version}
-%global posix_name_rel %{posix_name}-%{posix_release}
-%global additional_version 20140218
-%global additional_name man-pages-additional-%{additional_version}
-
 Summary: Linux kernel and C library user-space interface documentation
 Name: man-pages
 Version: 6.04
-Release: 2%{?dist}
+Release: 7%{?dist}
 # List of licenses with examples of man-pages using them
 # BSD-2-Clause: man-pages/man5/elf.5
 # BSD-3-Clause: man-pages/man3/list.3
@@ -28,10 +21,6 @@ Release: 2%{?dist}
 License: BSD-2-Clause AND BSD-3-Clause AND BSD-4.3TAHOE AND BSD-4-Clause-UC AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-Fedora-Public-Domain AND LicenseRef-Fedora-UltraPermissive AND Linux-man-pages-1-para AND Linux-man-pages-copyleft AND Linux-man-pages-copyleft-2-para AND Linux-man-pages-copyleft-var AND MIT AND Spencer-94
 URL: http://www.kernel.org/doc/man-pages/
 Source: http://www.kernel.org/pub/linux/docs/man-pages/man-pages-%{version}.tar.xz
-# POSIX man pages
-Source1: http://www.kernel.org/pub/linux/docs/man-pages/man-pages-posix/%{posix_name_rel}.tar.xz
-# additional man-pages, the source tarball is fedora/rhel only
-Source2: %{additional_name}.tar.xz
 
 BuildRequires: make
 Requires(post): %{_sbindir}/update-alternatives
@@ -51,8 +40,6 @@ BuildArch: noarch
 
 ## Patches ##
 
-# POSIX man pages
-
 # Regular man pages
 # resolves: #650985
 # https://bugzilla.kernel.org/show_bug.cgi?id=53781
@@ -62,17 +49,33 @@ Patch21: man-pages-3.42-close.patch
 # Resolves: RHEL-53953
 Patch22: 0001-dlinfo.3-Document-the-RTLD_DI_PHDR-request.patch
 
+# Upstream patches to provide more info on mktime().
+# Resolves: RHEL-58342
+Patch23: 0000-ctime.3-Document-how-to-check-errors-from-mktime.patch
+Patch24: 0001-ctime.3-Move-NOTES-to-a-subsection-within-CAVEATS.patch
+Patch25: 0002-ctime.3-CAVEATS-Add-note-about-tm_isdst-handling-in-.patch
+Patch26: 0003-ctime.3-EXAMPLES-Document-how-to-detect-invalid-or-ambiguous-times.patch
+
+# Upstream patch providing sched(7) corrections/clarifications
+Patch27: 0000-sched.7-Clarifications-corrections.patch
+
+# Add rtas.2, swapcontext.2 and cons.saver.8 man pages
+Patch28: additional-man-pages.patch
+
 %description
 A large collection of manual pages from the Linux Documentation Project (LDP).
 
 %prep
-%setup -q -a 1 -a 2
+%setup -q
 
-%patch21 -p1
-%patch22 -p1
-
-# rename posix README so we don't have conflict
-mv %{posix_name}/README %{posix_name}/%{posix_name_rel}.README
+%patch -p1 -P 21
+%patch -p1 -P 22
+%patch -p1 -P 23
+%patch -p1 -P 24
+%patch -p1 -P 25
+%patch -p1 -P 26
+%patch -p1 -P 27
+%patch -p1 -P 28
 
 ## Remove man pages we are not going to use ##
 
@@ -85,9 +88,6 @@ rm man3/{db,btree,dbopen,hash,mpool,recno}.3
 # we are not using SystemV anymore
 rm man7/boot.7
 
-# we do not have sccs (#203302)
-rm %{posix_name}/man1p/{admin,delta,get,prs,rmdel,sact,sccs,unget,val,what}.1p
-
 # remove man pages deprecated by libxcrypt (#1610307)
 rm man3/crypt{,_r}.3
 
@@ -96,12 +96,6 @@ rm man3/crypt{,_r}.3
 
 %install
 make install prefix=/usr DESTDIR=$RPM_BUILD_ROOT
-pushd %{posix_name}
-make install prefix=/usr DESTDIR=$RPM_BUILD_ROOT
-popd
-pushd %{additional_name}
-make install prefix=/usr DESTDIR=$RPM_BUILD_ROOT
-popd
 
 # rename files for alternative usage
 mv %{buildroot}%{_mandir}/man7/man.7 %{buildroot}%{_mandir}/man7/man.%{name}.7
@@ -130,11 +124,32 @@ fi
 
 %files
 %doc README Changes
-%doc %{posix_name}/POSIX-COPYRIGHT %{posix_name}/%{posix_name_rel}.{README,Announce}
 %ghost %{_mandir}/man7/man.7*
 %{_mandir}/man*/*
 
 %changelog
+* Mon Aug 18 2025 Patsy Griffin <patsy@redhat.com> - 6.04-7
+- Break up man-pages-additional-20140218.tar.xz
+- Add rtas.2, swapcontext.2 and cons.saver.8 man pages as a patch.
+  Resolves: RHEL-101596
+
+* Fri Jul 25 2025 Patsy Griffin <patsy@redhat.com> - 6.04-6
+- Remove POSIX man-pages to comply with licensing guidelines.
+  Resolves: RHEL-101595
+
+* Fri Jul 11 2025 Patsy Griffin <patsy@redhat.com> - 6.04-5
+- sched(7): Mention autogroup disabled behavior.
+  Resolves: RHEL-67690
+
+* Wed Jun 18 2025 Patsy Griffin <patsy@redhat.com> - 6.04-4
+- Activate previously added patch to improve mktime documentation and
+  add 3 related upstream patches including an example.
+  Related: RHEL-58342
+
+* Tue Oct 01 2024 Lukas Javorsky <ljavorsk@redhat.com> - 6.04-3
+- Add note about tm_isdst handling in mktime(3)
+- Resolves: RHEL-58342
+
 * Fri Sep 13 2024 Lukas Javorsky <ljavorsk@redhat.com> - 6.04-2
 - Add RTLD_DI_PHDR to dlinfo(3)
 - Resolves: RHEL-53953

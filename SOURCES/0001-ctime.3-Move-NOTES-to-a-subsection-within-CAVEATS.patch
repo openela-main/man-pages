@@ -1,0 +1,32 @@
+commit 6a7f1461b0e5474d50ef1920558dec103c0c058f
+Author: Alejandro Colomar <alx@kernel.org>
+Date:   Sat Aug 24 00:20:49 2024 +0200
+
+    ctime.3: Move NOTES to a subsection within CAVEATS
+    
+    Signed-off-by: Alejandro Colomar <alx@kernel.org>
+
+Conflicts:
+	Minor wording differences
+
+diff -Nrup a/man3/ctime.3 b/man3/ctime.3
+--- a/man3/ctime.3	2025-06-18 16:14:51.847871469 -0400
++++ b/man3/ctime.3	2025-06-18 16:25:22.406139771 -0400
+@@ -374,7 +374,8 @@ POSIX.1-2001.
+ POSIX.1-2001.
+ Marked obsolete in POSIX.1-2008 (recommending
+ .BR strftime (3)).
+-.SH NOTES
++.SH CAVEATS
++.SS Thread safety
+ The four functions
+ .BR asctime (),
+ .BR ctime (),
+@@ -403,7 +404,6 @@ a broken-down time structure and an arra
+ Execution of any of the functions may overwrite the information returned
+ in either of these objects by any of the other functions."
+ This can occur in the glibc implementation.
+-.SH CAVEATS
+ .SS mktime()
+ .I (time_t) \-1
+ can represent a valid time
