@@ -1,7 +1,7 @@
 Summary: Linux kernel and C library user-space interface documentation
 Name: man-pages
 Version: 6.04
-Release: 7%{?dist}
+Release: 9%{?dist}
 # List of licenses with examples of man-pages using them
 # BSD-2-Clause: man-pages/man5/elf.5
 # BSD-3-Clause: man-pages/man3/list.3
@@ -62,6 +62,13 @@ Patch27: 0000-sched.7-Clarifications-corrections.patch
 # Add rtas.2, swapcontext.2 and cons.saver.8 man pages
 Patch28: additional-man-pages.patch
 
+# Add update for RWF_ATOMIC. (RHEL-87647)
+Patch29: RHEL-87625-1.patch
+Patch30: RHEL-87625-2.patch
+Patch31: RHEL-87625-3.patch
+Patch32: RHEL-87625-4.patch
+Patch33: RHEL-34105.patch
+
 %description
 A large collection of manual pages from the Linux Documentation Project (LDP).
 
@@ -76,6 +83,11 @@ A large collection of manual pages from the Linux Documentation Project (LDP).
 %patch -p1 -P 26
 %patch -p1 -P 27
 %patch -p1 -P 28
+%patch -p1 -P 29
+%patch -p1 -P 30
+%patch -p1 -P 31
+%patch -p1 -P 32
+%patch -p1 -P 33
 
 ## Remove man pages we are not going to use ##
 
@@ -128,6 +140,13 @@ fi
 %{_mandir}/man*/*
 
 %changelog
+* Wed Nov 12 2025 Patsy Griffin <patsy@redhat.com> - 6.04-9
+- madvise(2): madvise can return EBUSY on MADV_SOFT_OFFLINE requests.
+  Resolves: RHEL-34105
+
+* Thu Oct 02 2025 Patsy Griffin <patsy@redhat.com> - 6.04-8
+- Document RWF_ATOMIC, STATX_ATTR_WRITE_ATOMIC flags (RHEL-87625)
+
 * Mon Aug 18 2025 Patsy Griffin <patsy@redhat.com> - 6.04-7
 - Break up man-pages-additional-20140218.tar.xz
 - Add rtas.2, swapcontext.2 and cons.saver.8 man pages as a patch.

@@ -1,0 +1,49 @@
+commit ed4bb613b3fb0f5ed1c365e4280e0517d36bbf25
+Author: John Garry <john.g.garry@oracle.com>
+Date:   Mon Jul 22 09:57:23 2024 +0000
+
+    io_submit.2: Document RWF_ATOMIC
+    
+    Document RWF_ATOMIC for asynchronous I/O.
+    
+    Reviewed-by: "Darrick J. Wong" <djwong@kernel.org>
+    Signed-off-by: John Garry <john.g.garry@oracle.com>
+    Cc: <linux-fsdevel@vger.kernel.org>
+    Cc: Jens Axboe <axboe@kernel.dk>
+    Cc: Christoph Hellwig <hch@lst.de>
+    Cc: Dave Chinner <dchinner@redhat.com>
+    Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+    Message-ID: <20240722095723.597846-4-john.g.garry@oracle.com>
+    [alx: wfix; ffix]
+    Signed-off-by: Alejandro Colomar <alx@kernel.org>
+
+diff --git a/man2/io_submit.2 b/man2/io_submit.2
+index 5e4e41af0..c3d86b4c4 100644
+--- a/man2/io_submit.2
++++ b/man2/io_submit.2
+@@ -140,6 +140,25 @@ as well the description of
+ .B O_SYNC
+ in
+ .BR open (2).
++.TP
++.BR RWF_ATOMIC " (since Linux 6.11)"
++Write a block of data such that
++a write will never be torn from power fail or similar.
++See the description of
++.B RWF_ATOMIC
++in
++.BR pwritev2 (2).
++For usage with
++.BR IOCB_CMD_PWRITEV ,
++the upper vector limit is
++.I stx_atomic_write_segments_max.
++See
++.B STATX_WRITE_ATOMIC
++and
++.I stx_atomic_write_segments_max
++description
++in
++.BR statx (2).
+ .RE
+ .TP
+ .I aio_lio_opcode
