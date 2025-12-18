@@ -1,0 +1,81 @@
+commit d4de003f2d752e514f0d28e1df62583fab186a9e
+Author: Himanshu Madhani <himanshu.madhani@oracle.com>
+Date:   Mon Jul 22 09:57:21 2024 +0000
+
+    statx.2: Document STATX_WRITE_ATOMIC
+    
+    Add the text to the statx man page.
+    
+    Signed-off-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+    Reviewed-by: "Darrick J. Wong" <djwong@kernel.org>
+    Signed-off-by: John Garry <john.g.garry@oracle.com>
+    Cc: <linux-fsdevel@vger.kernel.org>
+    Cc: Jens Axboe <axboe@kernel.dk>
+    Cc: Christoph Hellwig <hch@lst.de>
+    Cc: Dave Chinner <dchinner@redhat.com>
+    Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+    Message-ID: <20240722095723.597846-2-john.g.garry@oracle.com>
+    [alx: ffix]
+    Signed-off-by: Alejandro Colomar <alx@kernel.org>
+
+Conflicts: 
+    man2/statx.2: rework due to missing intermittent patches
+
+--- a/man2/statx.2	2024-02-11 19:59:38.000000000 -0500
++++ b/man2/statx.2	2025-09-15 14:26:29.527760753 -0400
+@@ -68,6 +68,11 @@ struct statx {
+     /* Direct I/O alignment restrictions */
+     __u32 stx_dio_mem_align;
+     __u32 stx_dio_offset_align;
++\&
++    /* Direct I/O atomic write limits */
++    __u32 stx_atomic_write_unit_min;
++    __u32 stx_atomic_write_unit_max;
++    __u32 stx_atomic_write_segments_max;
+ };
+ .EE
+ .in
+@@ -255,6 +260,10 @@ STATX_ALL	The same as STATX_BASIC_STATS
+ STATX_MNT_ID	Want stx_mnt_id (since Linux 5.8)
+ STATX_DIOALIGN	Want stx_dio_mem_align and stx_dio_offset_align
+ 	(since Linux 6.1; support varies by filesystem)
++STATX_WRITE_ATOMIC     Want stx_atomic_write_unit_min,
++       stx_atomic_write_unit_max,
++       and stx_atomic_write_segments_max.
++       (since Linux 6.11; support varies by filesystem)
+ .TE
+ .in
+ .P
+@@ -439,6 +448,22 @@ or 0 if direct I/O is not supported on t
+ This will only be nonzero if
+ .I stx_dio_mem_align
+ is nonzero, and vice versa.
++.TP
++.I stx_atomic_write_unit_min
++.TQ
++.I stx_atomic_write_unit_max
++The minimum and maximum sizes (in bytes) supported for direct I/O
++.RB ( O_DIRECT )
++on the file to be written with torn-write protection.
++These values are each guaranteed to be a power-of-2.
++.TP
++.I stx_atomic_write_segments_max
++The maximum number of elements in an array of vectors
++for a write with torn-write protection enabled.
++See
++.B RWF_ATOMIC
++flag for
++.BR pwritev2 (2).
+ .P
+ For further information on the above fields, see
+ .BR inode (7).
+@@ -492,6 +517,9 @@ It cannot be written to, and all reads f
+ against a cryptographic hash that covers the
+ entire file (e.g., via a Merkle tree).
+ .TP
++.BR STATX_ATTR_WRITE_ATOMIC " (since Linux 6.11)"
++The file supports torn-write protection.
++.TP
+ .BR STATX_ATTR_DAX " (since Linux 5.8)"
+ The file is in the DAX (cpu direct access) state.
+ DAX state attempts to

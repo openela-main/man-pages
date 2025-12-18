@@ -1,0 +1,36 @@
+commit d47bd08d8b254ff1dc46726e38fa205ad5eecba5
+Author: John Garry <john.g.garry@oracle.com>
+Date:   Tue Dec 3 14:53:59 2024 +0000
+
+    man/man2/statx.2: Update STATX_WRITE_ATOMIC filesystem support
+    
+    Linux v6.13 will include atomic write support for xfs and ext4, so
+    update STATX_WRITE_ATOMIC commentary to mention that.
+    
+    Cc: "Darrick J. Wong" <djwong@kernel.org>
+    Cc: <ritesh.list@gmail.com>
+    Signed-off-by: John Garry <john.g.garry@oracle.com>
+    Message-ID: <20241203145359.2691972-1-john.g.garry@oracle.com>
+    [alx: ffix]
+    Signed-off-by: Alejandro Colomar <alx@kernel.org>
+
+diff --git a/man2/statx.2 b/man2/statx.2
+index c5b5a28ec..7fab1d3d8 100644
+--- a/man2/statx.2
++++ b/man2/statx.2
+@@ -482,6 +482,15 @@ The minimum and maximum sizes (in bytes) supported for direct I/O
+ .RB ( O_DIRECT )
+ on the file to be written with torn-write protection.
+ These values are each guaranteed to be a power-of-2.
++.IP
++.B STATX_WRITE_ATOMIC
++.RI ( stx_atomic_write_unit_min ,
++.IR stx_atomic_write_unit_max ,
++and
++.IR stx_atomic_write_segments_max )
++is supported on block devices since Linux 6.11.
++The support on regular files varies by filesystem;
++it is supported by xfs and ext4 since Linux 6.13.
+ .TP
+ .I stx_atomic_write_segments_max
+ The maximum number of elements in an array of vectors

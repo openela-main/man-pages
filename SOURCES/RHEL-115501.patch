@@ -1,0 +1,33 @@
+commit 6f505f11556a13dd229dea904f54da2c1f3f90d4
+Author: tyberry@redhat.com <tyberry@redhat.com>
+Date:   Tue Nov 26 11:12:03 2024 -0500
+
+    madvise.2: MADV_SOFT_OFFLINE requests can report EBUSY
+    
+    If the page could not be offlined madvise will report EBUSY.
+    This might occur if the page is currently in use or locked.
+    
+    Signed-off-by: Tyonnchie Berry <tyberry@redhat.com>
+    Message-Id: <Z0XzU9R9Kx0RoeUG@redhat.com>
+    Acked-by: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+    [alx: wfix, ffix, and other tweaks]
+    Signed-off-by: Alejandro Colomar <alx@kernel.org>
+
+diff --git a/man2/madvise.2 b/man2/madvise.2
+index 4f2210ee2..0dd481d21 100644
+--- a/man2/madvise.2
++++ b/man2/madvise.2
+@@ -702,6 +702,13 @@ The map exists, but the area maps something that isn't a file.
+ .BR MADV_COLLAPSE )
+ Could not charge hugepage to cgroup: cgroup limit exceeded.
+ .TP
++.B EBUSY
++(for
++.BR MADV_SOFT_OFFLINE )
++Any pages within the specified address range
++could not be offlined.
++This might occur if the page is currently in use or locked.
++.TP
+ .B EFAULT
+ .I advice
+ is
