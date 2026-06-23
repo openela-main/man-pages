@@ -1,0 +1,35 @@
+commit 0cdcaf9d0d1f1c60f143364c5664f2c2e42fad1c
+Author: Patsy Griffin <patsy@redhat.com>
+Date:   Thu May 7 15:05:08 2026 -0400
+
+    man/man5/core.5: Update compression format for systemd-coredump(8)
+    
+    As of version 246, systemd-coredump(8) defaults to zstd(1) compression
+    for core dumps, rather than lz4(1).
+    
+    systemd.git ef5924aa (2020-05-04; "coredump: add zstandard support for coredumps")
+    
+    Signed-off-by: Patsy Griffin <patsy@redhat.com>
+    Message-ID: <20260507190508.386186-2-patsy@redhat.com>
+    Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+    Message-ID: <eb5c6c20-48a3-46a9-9918-12beffb8e6bc@redhat.com>
+    [alx: Minor tweaks]
+    Signed-off-by: Alejandro Colomar <alx@kernel.org>
+
+diff --git a/man5/core.5 b/man/man5/core.5
+index 4da5819b6..7b02bd5ba 100644
+--- a/man5/core.5
++++ b/man5/core.5
+@@ -515,9 +515,11 @@ program:
+ In this case, core dumps will be placed in the location configured for
+ .BR systemd\-coredump (8),
+ typically as
+-.BR lz4 (1)
++.BR zstd (1)
+ compressed files in the directory
+ .IR /var/lib/systemd/coredump/ .
++Compression on or off is configurable via
++.BR coredump.conf (5).
+ One can list the core dumps that have been recorded by
+ .BR systemd\-coredump (8)
+ using

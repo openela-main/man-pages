@@ -1,7 +1,7 @@
 Summary: Linux kernel and C library user-space interface documentation
 Name: man-pages
 Version: 6.04
-Release: 9%{?dist}
+Release: 10%{?dist}
 # List of licenses with examples of man-pages using them
 # BSD-2-Clause: man-pages/man5/elf.5
 # BSD-3-Clause: man-pages/man3/list.3
@@ -69,6 +69,11 @@ Patch31: RHEL-87625-3.patch
 Patch32: RHEL-87625-4.patch
 Patch33: RHEL-34105.patch
 
+# suffixes(7): Add zstd format to the suffixes file.
+# core(5):  Document dump file format change from lz4 format to zstd format.
+Patch34: RHEL-152440-1.patch
+Patch35: RHEL-152440-2.patch
+
 %description
 A large collection of manual pages from the Linux Documentation Project (LDP).
 
@@ -88,6 +93,8 @@ A large collection of manual pages from the Linux Documentation Project (LDP).
 %patch -p1 -P 31
 %patch -p1 -P 32
 %patch -p1 -P 33
+%patch -p1 -P 34
+%patch -p1 -P 35
 
 ## Remove man pages we are not going to use ##
 
@@ -140,6 +147,11 @@ fi
 %{_mandir}/man*/*
 
 %changelog
+* Wed May 27 2026 Patsy Griffin <patsy@redhat.com> - 6.04-10
+- suffixes(7): Add zstd format to the suffixes file
+- core(5): Document dump file format change from lz4 format to zstd format
+  Resolves: RHEL-152440
+
 * Wed Nov 12 2025 Patsy Griffin <patsy@redhat.com> - 6.04-9
 - madvise(2): madvise can return EBUSY on MADV_SOFT_OFFLINE requests.
   Resolves: RHEL-34105
