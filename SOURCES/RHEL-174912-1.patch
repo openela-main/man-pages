@@ -1,0 +1,25 @@
+commit 691adc81e4c3217c64e90e3ee7e6fa5bf82ef640
+Author: Patsy Griffin <patsy@redhat.com>
+Date:   Thu May 7 15:05:07 2026 -0400
+
+    man/man7/suffixes.7: Add .zst suffix
+    
+    Signed-off-by: Patsy Griffin <patsy@redhat.com>
+    Message-ID: <20260507190508.386186-1-patsy@redhat.com>
+    Signed-off-by: Alejandro Colomar <alx@kernel.org>
+
+Conflicts:
+	man/man7/suffixes.7
+	  (reworked to match version specific format)
+	
+diff -Nrup a/man7/suffixes.7 b/man7/suffixes.7
+--- a/man7/suffixes.7	2024-02-11 19:59:38.000000000 -0500
++++ b/man7/suffixes.7	2026-05-20 21:57:17.214317096 -0400
+@@ -253,6 +253,7 @@ Suffix	File type
+ \&.z	File compressed using \fBpack\fP(1) (or an old \fBgzip\fP(1))
+ \&.zip	\fBzip\fP(1) archive
+ \&.zoo	\fBzoo\fP(1) archive
++\&.zst	File compressed using \fBzstd\fP(1) format
+ \&\[ti]	Emacs or \fBpatch\fP(1) backup file
+ \&rc	startup (`run control') file, e.g., \fI.newsrc\fP
+ .TE
